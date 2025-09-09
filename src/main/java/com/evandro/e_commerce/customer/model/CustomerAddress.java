@@ -10,4 +10,16 @@ public class CustomerAddress {
         this.street = street;
         this.number = number;
     }
+
+    public String getZipCode() {
+        return this.zipCode;
+    }
+
+    public String getStreet() {
+        return street;
+    }
+
+    public int getNumber() {
+        return number;
+    }
 }

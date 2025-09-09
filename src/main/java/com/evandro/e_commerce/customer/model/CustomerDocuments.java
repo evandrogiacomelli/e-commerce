@@ -14,4 +14,20 @@ public class CustomerDocuments {
         this.cpf = cpf;
         this.rg = rg;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public String getRg() {
+        return rg;
+    }
 }

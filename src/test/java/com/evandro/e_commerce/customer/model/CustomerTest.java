@@ -23,6 +23,7 @@ public class CustomerTest {
 
         CustomerRegisterInfo registerInfo = new CustomerRegisterInfo(CustomerStatus.ACTIVE);
 
+
         Customer customer = new Customer(documents, address, registerInfo);
 
         assertNotNull(customer);
