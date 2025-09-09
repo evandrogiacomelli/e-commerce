@@ -7,4 +7,11 @@ public class CustomerRegisterInfo {
     private LocalDateTime lastAccess;
     private CustomerStatus status;
     private LocalDateTime inactiveIn;
+
+    public CustomerRegisterInfo(CustomerStatus status) {
+        this.registerDate = LocalDateTime.now();
+        this.lastAccess = LocalDateTime.now();
+        this.status = status;
+        this.inactiveIn = inactiveIn;
+    }
 }

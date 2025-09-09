@@ -7,4 +7,11 @@ public class CustomerDocuments {
     private LocalDate birthDate;
     private String cpf;
     private String rg;
+
+    public CustomerDocuments(String name, LocalDate birthDate, String cpf, String rg) {
+        this.name = name;
+        this.birthDate = birthDate;
+        this.cpf = cpf;
+        this.rg = rg;
+    }
 }

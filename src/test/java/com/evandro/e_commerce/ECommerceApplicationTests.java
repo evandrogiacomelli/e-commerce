@@ -1,5 +1,6 @@
 package com.evandro.e_commerce;
 
+import com.evandro.e_commerce.customer.model.CustomerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
