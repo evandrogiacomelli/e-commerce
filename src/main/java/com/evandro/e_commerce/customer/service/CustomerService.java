@@ -10,11 +10,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface CustomerService {
-    Customer create(CustomerDocuments documents, CustomerAddress address, CustomerRegisterInfo registerInfo);
-    Optional<Customer> findById(UUID id);
-    List<Customer> listAll();
-    List<Customer> listActive();
-    Customer update(UUID id, CustomerDocuments documents, CustomerAddress address, CustomerRegisterInfo registerInfo);
-    Customer deactivate(UUID id);
-    Customer activate(UUID id);
+    Customer createCustomer(CustomerDocuments documents, CustomerAddress address, CustomerRegisterInfo registerInfo);
+    Optional<Customer> findCustomerById(UUID id);
+    List<Customer> listAllCustomer();
+    List<Customer> listActiveCustomer();
+    Customer updateCustomer(UUID id, CustomerDocuments documents, CustomerAddress address, CustomerRegisterInfo registerInfo);
+    Customer deactivateCustomer(UUID id);
+    Customer activateCustomer(UUID id);
 }
