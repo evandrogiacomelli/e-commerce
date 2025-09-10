@@ -8,9 +8,12 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Repository;
+
 import com.evandro.e_commerce.product.model.Product;
 import com.evandro.e_commerce.product.model.ProductStatus;
 
+@Repository
 public class InMemoryProductRepository implements ProductRepository {
 
     private final Map<UUID, Product> products = new ConcurrentHashMap<>();

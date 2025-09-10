@@ -5,11 +5,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.stereotype.Service;
+
 import com.evandro.e_commerce.product.exception.ProductNotFoundException;
 import com.evandro.e_commerce.product.factory.ProductFactory;
 import com.evandro.e_commerce.product.model.Product;
 import com.evandro.e_commerce.product.repository.ProductRepository;
 
+@Service
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
