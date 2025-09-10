@@ -17,7 +17,7 @@ public class InMemoryCustomerRepository implements CustomerRepository {
     private final Map<UUID, Customer> customers = new ConcurrentHashMap<>();
 
     @Override
-    public Customer saveCustomer(Customer customer) {
+    public Customer save(Customer customer) {
         return null;
     }
 
@@ -32,22 +32,7 @@ public class InMemoryCustomerRepository implements CustomerRepository {
     }
 
     @Override
-    public List<Customer> findActiveCustomer() {
+    public List<Customer> findActiveCustomers() {
         return List.of();
-    }
-
-    @Override
-    public Customer updateCustomer(UUID id, CustomerDocuments documents, CustomerAddress address, CustomerRegisterInfo info) {
-        return null;
-    }
-
-    @Override
-    public Customer deactiveCustomer(UUID id) {
-        return null;
-    }
-
-    @Override
-    public Customer reactivateCustomer(UUID id) {
-        return null;
     }
 }
