@@ -40,4 +40,8 @@ public class InMemoryCustomerRepository implements CustomerRepository {
                 .filter(c -> c.getRegisterInfo().getStatus() == CustomerStatus.ACTIVE)
                 .collect(Collectors.toList());
     }
+
+    public void clear() {
+        customers.clear();
+    }
 }
