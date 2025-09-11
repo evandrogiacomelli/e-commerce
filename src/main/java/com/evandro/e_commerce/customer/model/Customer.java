@@ -1,5 +1,6 @@
 package com.evandro.e_commerce.customer.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -43,5 +44,24 @@ public class Customer {
 
     public ArrayList<CustomerPaymentMethods> getPaymentMethods() {
         return paymentMethods;
+    }
+
+    public void update(CustomerDocuments documents, CustomerAddress address, CustomerRegisterInfo registerInfo) {
+        this.documents = documents;
+        this.address = address;
+        this.registerInfo = registerInfo;
+        this.registerInfo.setLastAccess(LocalDateTime.now());
+    }
+
+    public void deactivate() {
+        this.registerInfo.setStatus(CustomerStatus.INACTIVE);
+        this.registerInfo.setInactiveIn(LocalDateTime.now());
+        this.registerInfo.setLastAccess(LocalDateTime.now());
+    }
+
+    public void activate() {
+        this.registerInfo.setStatus(CustomerStatus.ACTIVE);
+        this.registerInfo.setInactiveIn(null);
+        this.registerInfo.setLastAccess(LocalDateTime.now());
     }
 }
