@@ -1,16 +1,15 @@
 package com.evandro.e_commerce.order.repository;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,7 +33,6 @@ public class InMemoryOrderRepositoryTest {
     void setUp() {
         repository = new InMemoryOrderRepository();
 
-        // Configura clientes de teste
         CustomerDocuments doc1 = new CustomerDocuments("Customer One", LocalDate.of(1980, 1, 1), "111.111.111-11", "1234567");
         CustomerAddress addr1 = new CustomerAddress("10000-000", "Street A", 1);
         CustomerRegisterInfo info1 = new CustomerRegisterInfo(CustomerStatus.ACTIVE);

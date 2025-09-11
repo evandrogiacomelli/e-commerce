@@ -20,10 +20,10 @@ import com.evandro.e_commerce.customer.exception.CustomerNotFoundException;
 import com.evandro.e_commerce.order.dto.OrderItemRequest;
 import com.evandro.e_commerce.order.dto.OrderRequest;
 import com.evandro.e_commerce.order.dto.OrderResponse;
+import com.evandro.e_commerce.order.exception.InvalidOrderDataException;
 import com.evandro.e_commerce.order.exception.OrderNotFoundException;
 import com.evandro.e_commerce.order.model.Order;
 import com.evandro.e_commerce.order.service.OrderService;
-import com.evandro.e_commerce.product.exception.InvalidOrderDataException;
 import com.evandro.e_commerce.product.exception.ProductNotFoundException;
 
 @RestController

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.evandro.e_commerce.customer.dto.CustomerResponse;
 import com.evandro.e_commerce.order.model.Order;
 import com.evandro.e_commerce.order.model.OrderStatus;
 import com.evandro.e_commerce.order.model.PaymentStatus;
@@ -13,7 +14,7 @@ import com.evandro.e_commerce.order.model.PaymentStatus;
 public class OrderResponse {
 
     private final UUID id;
-    // private CustomerResponse customer; 
+    private final CustomerResponse customer; 
     private final LocalDateTime createdAt;
     private final OrderStatus status;
     private final PaymentStatus paymentStatus;
@@ -22,7 +23,7 @@ public class OrderResponse {
 
     public OrderResponse(Order order) {
         this.id = order.getId();
-        // this.customer = new CustomerResponse(order.getCustomer());
+        this.customer = new CustomerResponse(order.getCustomer());
         this.createdAt = order.getCreatedAt();
         this.status = order.getStatus();
         this.paymentStatus = order.getPaymentStatus();
@@ -36,9 +37,9 @@ public class OrderResponse {
         return id;
     }
 
-    // public CustomerResponse getCustomer() {
-    //     return customer;
-    // }
+    public CustomerResponse getCustomer() {
+        return customer;
+    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;

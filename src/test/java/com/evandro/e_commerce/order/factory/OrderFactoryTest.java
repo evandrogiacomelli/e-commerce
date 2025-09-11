@@ -15,15 +15,16 @@ import com.evandro.e_commerce.customer.model.Customer;
 import com.evandro.e_commerce.customer.model.CustomerAddress;
 import com.evandro.e_commerce.customer.model.CustomerDocuments;
 import com.evandro.e_commerce.customer.model.CustomerRegisterInfo;
-import com.evandro.e_commerce.customer.model.CustomerStatus;
+import com.evandro.e_commerce.customer.model.CustomerStatus; 
+import com.evandro.e_commerce.order.exception.InvalidOrderDataException;
 import com.evandro.e_commerce.order.model.Order;
 import com.evandro.e_commerce.order.model.OrderStatus;
 import com.evandro.e_commerce.order.model.PaymentStatus;
-import com.evandro.e_commerce.product.exception.InvalidOrderDataException;
 
 public class OrderFactoryTest {
 
     private Customer testCustomer;
+    private Customer inactiveCustomer; 
 
     @BeforeEach
     void setUp() {
@@ -31,6 +32,9 @@ public class OrderFactoryTest {
         CustomerAddress address = new CustomerAddress("12345-678", "Test Street", 100);
         CustomerRegisterInfo registerInfo = new CustomerRegisterInfo(CustomerStatus.ACTIVE);
         testCustomer = new Customer(documents, address, registerInfo);
+
+        CustomerRegisterInfo inactiveInfo = new CustomerRegisterInfo(CustomerStatus.INACTIVE);
+        inactiveCustomer = new Customer(documents, address, inactiveInfo);
     }
 
     @Test
@@ -53,5 +57,13 @@ public class OrderFactoryTest {
         // Act & Assert
         assertThrows(InvalidOrderDataException.class, () -> OrderFactory.create(null),
                 "Customer cannot be null when creating an order.");
+    }
+
+    @Test 
+    @DisplayName("Should throw InvalidOrderDataException when customer is inactive")
+    void shouldThrowExceptionWhenCustomerIsInactive() {
+        // Act & Assert
+        assertThrows(InvalidOrderDataException.class, () -> OrderFactory.create(inactiveCustomer),
+                "Order cannot be created for an inactive customer.");
     }
 }

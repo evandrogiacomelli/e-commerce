@@ -1,4 +1,4 @@
-package com.evandro.e_commerce.product.exception;
+package com.evandro.e_commerce.order.exception;
 
 public class InvalidOrderDataException extends RuntimeException {
 
