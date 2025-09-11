@@ -41,7 +41,7 @@ public class Product {
         this.description = description;
         this.price = price;
         this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = this.createdAt;
         this.status = ProductStatus.ACTIVE;
     }
 
