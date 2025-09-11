@@ -1,16 +1,34 @@
 package com.evandro.e_commerce.customer.model;
 
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
 
+@Entity
+@Table(name = "customers")
 public class Customer {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(columnDefinition = "UUID")
     private UUID id;
+    
+    @Embedded
     private CustomerDocuments documents;
+    
+    @Embedded
     private CustomerAddress address;
+    
+    @Embedded
     private CustomerRegisterInfo registerInfo;
+    
+    @Transient
     private ArrayList<CustomerHistory> history;
+    
+    @Transient
     private ArrayList<CustomerPaymentMethods> paymentMethods;
+
+    public Customer() {}
 
     public Customer(CustomerDocuments documents,
                     CustomerAddress address, CustomerRegisterInfo registerInfo) {

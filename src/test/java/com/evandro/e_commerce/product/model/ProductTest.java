@@ -29,6 +29,6 @@ public class ProductTest {
         assertNotNull(product.getCreatedAt());
         assertNotNull(product.getUpdatedAt());
         assertEquals(ProductStatus.ACTIVE, product.getStatus());
-//        assertEquals(product.getCreatedAt(), product.getUpdatedAt()); // No momento da criação, são iguais
+//        assertEquals(product.getCreatedAt(), product.getUpdatedAt()); // diferenca de milisegunds entre update e criacao.
     }
 }

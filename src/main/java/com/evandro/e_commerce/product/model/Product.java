@@ -1,18 +1,39 @@
 package com.evandro.e_commerce.product.model;
 
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Entity
+@Table(name = "products")
 public class Product {
 
-    private final UUID id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(columnDefinition = "UUID")
+    private UUID id;
+    
+    @Column(nullable = false)
     private String name;
+    
+    @Column(length = 1000)
     private String description;
+    
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
-    private final LocalDateTime createdAt;
+    
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+    
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private ProductStatus status;
+
+    public Product() {}
 
     public Product(String name, String description, BigDecimal price) {
         this.id = UUID.randomUUID();
