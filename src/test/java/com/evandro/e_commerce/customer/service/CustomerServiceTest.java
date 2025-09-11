@@ -3,6 +3,7 @@ package com.evandro.e_commerce.customer.service;
 import com.evandro.e_commerce.customer.exception.InvalidAddressException;
 import com.evandro.e_commerce.customer.exception.InvalidCpfException;
 import com.evandro.e_commerce.customer.exception.InvalidCustomerDataException;
+import com.evandro.e_commerce.customer.factory.CustomerFactory;
 import com.evandro.e_commerce.customer.model.*;
 import com.evandro.e_commerce.customer.repository.CustomerRepository;
 import com.evandro.e_commerce.customer.repository.InMemoryCustomerRepository;
@@ -148,7 +149,52 @@ public class CustomerServiceTest {
         }
     }
 
+    @Test
+    @DisplayName("Should update and return Customer")
+    void shouldUpdateAndReturnCustomer() {
+        Customer customer = customerService.createCustomer(validDocuments, validAddress, validInfo);
+        CustomerDocuments documentsUpdate = new CustomerDocuments("Mtz", LocalDate.of(1990, 3, 25), "200.876.234-22", "10.200.345-7");
 
+        Optional<Customer> customerBydId = customerService.findCustomerById(customer.getId());
 
+        assertEquals("Evandro", customerBydId.get().getDocuments().getName());
 
+        customerService.updateCustomer(customer.getId(), documentsUpdate, validAddress, validInfo);
+
+        Optional<Customer> customerBydIdUpdated = customerService.findCustomerById(customer.getId());
+//
+        assertEquals("Mtz", customerBydIdUpdated.get().getDocuments().getName());
+    }
+
+    @Test
+    @DisplayName("Should deactivate Consumer")
+    void shouldDeactivateAndReturnCustomer() {
+        Customer customer = customerService.createCustomer(validDocuments, validAddress, validInfo);
+
+        Optional<Customer> customerBydId = customerService.findCustomerById(customer.getId());
+        assertEquals(CustomerStatus.ACTIVE, customerBydId.get().getRegisterInfo().getStatus());
+
+        customerService.deactivateCustomer(customer.getId());
+        Optional<Customer> customerBydIdUpdated = customerService.findCustomerById(customer.getId());
+        assertEquals(CustomerStatus.INACTIVE, customerBydIdUpdated.get().getRegisterInfo().getStatus());
+    }
+
+    @Test
+    @DisplayName("Should deactivate Consumer")
+    void shouldActivateAndReturnCustomer() {
+        CustomerDocuments deactivatedDocuments = new CustomerDocuments("Mtz", LocalDate.of(1990, 3, 25), "200.876.234-22", "10.200.345-7");
+
+        Customer customer = customerService.createCustomer(validDocuments, validAddress, validInfo);
+
+        Optional<Customer> customerBydId = customerService.findCustomerById(customer.getId());
+        assertEquals(CustomerStatus.ACTIVE, customerBydId.get().getRegisterInfo().getStatus());
+
+        customerService.deactivateCustomer(customer.getId());
+        Optional<Customer> customerBydIdUpdatedInactive = customerService.findCustomerById(customer.getId());
+        assertEquals(CustomerStatus.INACTIVE, customerBydIdUpdatedInactive.get().getRegisterInfo().getStatus());
+
+        customerService.activateCustomer(customer.getId());
+        Optional<Customer> customerBydIdUpdated = customerService.findCustomerById(customer.getId());
+        assertEquals(CustomerStatus.ACTIVE, customerBydIdUpdated.get().getRegisterInfo().getStatus());
+    }
 }
