@@ -1,15 +1,16 @@
 package com.evandro.e_commerce.customer.service;
 
+import com.evandro.e_commerce.customer.dto.CustomerDtoConverter;
+import com.evandro.e_commerce.customer.dto.CustomerRequest;
+import com.evandro.e_commerce.customer.dto.CustomerResponse;
 import com.evandro.e_commerce.customer.exception.CustomerNotFoundException;
 import com.evandro.e_commerce.customer.factory.CustomerFactory;
 import com.evandro.e_commerce.customer.model.Customer;
-import com.evandro.e_commerce.customer.model.CustomerAddress;
-import com.evandro.e_commerce.customer.model.CustomerDocuments;
-import com.evandro.e_commerce.customer.model.CustomerRegisterInfo;
 import com.evandro.e_commerce.customer.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CustomerServiceImpl implements CustomerService{
@@ -21,50 +22,68 @@ public class CustomerServiceImpl implements CustomerService{
     }
 
     @Override
-    public Customer createCustomer(CustomerDocuments documents, CustomerAddress address, CustomerRegisterInfo registerInfo) {
-        Customer customer = CustomerFactory.create(documents, address, registerInfo);
-        return customerRepository.save(customer);
+    public CustomerResponse createCustomer(CustomerRequest request) {
+        Customer customer = CustomerFactory.create(
+                CustomerDtoConverter.toCustomerDocuments(request),
+                CustomerDtoConverter.toCustomerAddress(request),
+                CustomerDtoConverter.toCustomerRegisterInfo());
+        Customer savedCustomer = customerRepository.save(customer);
+        return new CustomerResponse(savedCustomer);
     }
 
     @Override
-    public Optional<Customer> findCustomerById(UUID id) {
-        return customerRepository.findById(id);
+    public Optional<CustomerResponse> findCustomerById(UUID id) {
+        return customerRepository.findById(id)
+                .map(CustomerResponse::new);
     }
 
     @Override
-    public List<Customer> listAllCustomer() {
-        return customerRepository.findAll();
+    public List<CustomerResponse> listAllCustomer() {
+        return customerRepository.findAll().stream()
+                .map(CustomerResponse::new)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Customer> listActiveCustomer() {
-        return customerRepository.findActiveCustomers();
+    public List<CustomerResponse> listActiveCustomer() {
+        return customerRepository.findActiveCustomers().stream()
+                .map(CustomerResponse::new)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Customer updateCustomer(UUID id, CustomerDocuments documents, CustomerAddress address, CustomerRegisterInfo registerInfo) {
+    public CustomerResponse updateCustomer(UUID id, CustomerRequest request) {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new CustomerNotFoundException("Customer with ID " + id + " not found."));
 
-        CustomerFactory.create(documents, address, registerInfo);
+        CustomerFactory.create(
+                CustomerDtoConverter.toCustomerDocuments(request),
+                CustomerDtoConverter.toCustomerAddress(request),
+                CustomerDtoConverter.toCustomerRegisterInfo());
 
-        customer.update(documents, address, registerInfo);
-        return customerRepository.save(customer);
+        customer.update(
+                CustomerDtoConverter.toCustomerDocuments(request),
+                CustomerDtoConverter.toCustomerAddress(request),
+                CustomerDtoConverter.toCustomerRegisterInfo());
+        Customer savedCustomer = customerRepository.save(customer);
+        return new CustomerResponse(savedCustomer);
     }
 
     @Override
-    public Customer deactivateCustomer(UUID id) {
+    public CustomerResponse deactivateCustomer(UUID id) {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new CustomerNotFoundException("Customer with ID " + id + " not found."));
         customer.deactivate();
-        return customerRepository.save(customer);
+        Customer savedCustomer = customerRepository.save(customer);
+        return new CustomerResponse(savedCustomer);
     }
 
     @Override
-    public Customer activateCustomer(UUID id) {
+    public CustomerResponse activateCustomer(UUID id) {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new CustomerNotFoundException("Customer with ID " + id + " not found."));
         customer.activate();
-        return customerRepository.save(customer);
+        Customer savedCustomer = customerRepository.save(customer);
+        return new CustomerResponse(savedCustomer);
     }
 }
