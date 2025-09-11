@@ -1,5 +1,7 @@
 package com.evandro.e_commerce.customer.service;
 
+import com.evandro.e_commerce.customer.exception.CustomerNotFoundException;
+import com.evandro.e_commerce.customer.factory.CustomerFactory;
 import com.evandro.e_commerce.customer.model.Customer;
 import com.evandro.e_commerce.customer.model.CustomerAddress;
 import com.evandro.e_commerce.customer.model.CustomerDocuments;
@@ -20,36 +22,49 @@ public class CustomerServiceImpl implements CustomerService{
 
     @Override
     public Customer createCustomer(CustomerDocuments documents, CustomerAddress address, CustomerRegisterInfo registerInfo) {
-        return null;
+        Customer customer = CustomerFactory.create(documents, address, registerInfo);
+        return customerRepository.save(customer);
     }
 
     @Override
     public Optional<Customer> findCustomerById(UUID id) {
-        return Optional.empty();
+        return customerRepository.findById(id);
     }
 
     @Override
     public List<Customer> listAllCustomer() {
-        return List.of();
+        return customerRepository.findAll();
     }
 
     @Override
     public List<Customer> listActiveCustomer() {
-        return List.of();
+        return customerRepository.findActiveCustomers();
     }
 
     @Override
     public Customer updateCustomer(UUID id, CustomerDocuments documents, CustomerAddress address, CustomerRegisterInfo registerInfo) {
-        return null;
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer with ID " + id + " not found."));
+
+        CustomerFactory.create(documents, address, registerInfo);
+
+        customer.update(documents, address, registerInfo);
+        return customerRepository.save(customer);
     }
 
     @Override
     public Customer deactivateCustomer(UUID id) {
-        return null;
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer with ID " + id + " not found."));
+        customer.deactivate();
+        return customerRepository.save(customer);
     }
 
     @Override
     public Customer activateCustomer(UUID id) {
-        return null;
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer with ID " + id + " not found."));
+        customer.activate();
+        return customerRepository.save(customer);
     }
 }

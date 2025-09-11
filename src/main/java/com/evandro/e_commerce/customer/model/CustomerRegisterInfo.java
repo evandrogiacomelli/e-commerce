@@ -12,6 +12,34 @@ public class CustomerRegisterInfo {
         this.registerDate = LocalDateTime.now();
         this.lastAccess = LocalDateTime.now();
         this.status = status;
+        this.inactiveIn = null;
+    }
+
+    public LocalDateTime getRegisterDate() {
+        return registerDate;
+    }
+
+    public LocalDateTime getLastAccess() {
+        return lastAccess;
+    }
+
+    public CustomerStatus getStatus() {
+        return status;
+    }
+
+    public LocalDateTime getInactiveIn() {
+        return inactiveIn;
+    }
+
+    public void setStatus(CustomerStatus status) {
+        this.status = status;
+    }
+
+    public void setLastAccess(LocalDateTime lastAccess) {
+        this.lastAccess = lastAccess;
+    }
+
+    public void setInactiveIn(LocalDateTime inactiveIn) {
         this.inactiveIn = inactiveIn;
     }
 }

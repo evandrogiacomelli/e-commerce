@@ -1,38 +1,43 @@
 package com.evandro.e_commerce.customer.repository;
 
-import com.evandro.e_commerce.customer.model.Customer;
-import com.evandro.e_commerce.customer.model.CustomerAddress;
-import com.evandro.e_commerce.customer.model.CustomerDocuments;
-import com.evandro.e_commerce.customer.model.CustomerRegisterInfo;
-import com.evandro.e_commerce.product.model.Product;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Repository;
+
+import com.evandro.e_commerce.customer.model.Customer;
+import com.evandro.e_commerce.customer.model.CustomerStatus;
+
+@Repository
 public class InMemoryCustomerRepository implements CustomerRepository {
 
     private final Map<UUID, Customer> customers = new ConcurrentHashMap<>();
 
     @Override
     public Customer save(Customer customer) {
-        return null;
+        customers.put(customer.getId(), customer);
+        return customer;
     }
 
     @Override
     public Optional<Customer> findById(UUID id) {
-        return Optional.empty();
+        return Optional.ofNullable(customers.get(id));
     }
 
     @Override
     public List<Customer> findAll() {
-        return List.of();
+        return new ArrayList<>(customers.values());
     }
 
     @Override
     public List<Customer> findActiveCustomers() {
-        return List.of();
+        return customers.values().stream()
+                .filter(c -> c.getRegisterInfo().getStatus() == CustomerStatus.ACTIVE)
+                .collect(Collectors.toList());
     }
 }
