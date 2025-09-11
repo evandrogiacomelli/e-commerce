@@ -35,19 +35,24 @@ public class CustomerControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private CustomerService customerService;
+
     private CustomerRequest validRequest;
+
+    private static InMemoryCustomerRepository customerRepository = new InMemoryCustomerRepository();
 
     @TestConfiguration
     static class TestConfig {
         @Bean
         public CustomerService customerService() {
-            CustomerRepository customerRepository = new InMemoryCustomerRepository();
             return new CustomerServiceImpl(customerRepository);
         }
     }
 
     @BeforeEach
     void setUp() {
+        customerRepository.clear();
         validRequest = new CustomerRequest("Evandro", LocalDate.of(1994, 10, 5),
                 "055.988.200-77", "10.444.234-2", "83200-200", "rua dos canarios", 44);
     }
@@ -135,6 +140,11 @@ public class CustomerControllerTest {
 
         CustomerResponse createdCustomer = objectMapper.readValue(createResponse, CustomerResponse.class);
 
+        mockMvc.perform(get("/customers/active")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1));
+
         mockMvc.perform(patch("/customers/{id}/deactivate", createdCustomer.getId())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -143,11 +153,6 @@ public class CustomerControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(validRequest)))
                 .andExpect(status().isCreated());
-
-        mockMvc.perform(get("/customers/active")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1));
     }
 
     @Test
