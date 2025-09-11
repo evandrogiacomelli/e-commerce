@@ -16,11 +16,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.evandro.e_commerce.customer.exception.CustomerNotFoundException;
 import com.evandro.e_commerce.order.dto.OrderItemRequest;
+import com.evandro.e_commerce.order.dto.OrderRequest;
 import com.evandro.e_commerce.order.dto.OrderResponse;
 import com.evandro.e_commerce.order.exception.OrderNotFoundException;
 import com.evandro.e_commerce.order.model.Order;
 import com.evandro.e_commerce.order.service.OrderService;
+import com.evandro.e_commerce.product.exception.InvalidOrderDataException;
 import com.evandro.e_commerce.product.exception.ProductNotFoundException;
 
 @RestController
@@ -33,17 +36,17 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    // @PostMapping
-    // public ResponseEntity<OrderResponse> createOrder(@RequestBody OrderRequest request) {
-    //     try {
-    //         Order order = orderService.createOrder(request.getCustomerId());
-    //         return ResponseEntity.status(HttpStatus.CREATED).body(new OrderResponse(order));
-    //     } catch (CustomerNotFoundException e) {
-    //         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-    //     } catch (InvalidOrderDataException e) {
-    //         return ResponseEntity.badRequest().build();
-    //     }
-    // }
+    @PostMapping
+    public ResponseEntity<OrderResponse> createOrder(@RequestBody OrderRequest request) {
+        try {
+            Order order = orderService.createOrder(request.getCustomerId());
+            return ResponseEntity.status(HttpStatus.CREATED).body(new OrderResponse(order));
+        } catch (CustomerNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (InvalidOrderDataException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 
     @GetMapping("/{orderId}")
     public ResponseEntity<OrderResponse> getOrderById(@PathVariable UUID orderId) {

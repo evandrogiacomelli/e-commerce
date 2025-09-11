@@ -9,7 +9,7 @@ import com.evandro.e_commerce.order.model.Order;
 
 public interface OrderService {
 
-    // Order createOrder(UUID customerId); 
+    Order createOrder(UUID customerId); 
 
     Optional<Order> findOrderById(UUID orderId);
 

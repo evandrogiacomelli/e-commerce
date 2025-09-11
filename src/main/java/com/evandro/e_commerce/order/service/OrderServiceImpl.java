@@ -7,6 +7,9 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.evandro.e_commerce.customer.exception.CustomerNotFoundException;
+import com.evandro.e_commerce.customer.model.Customer;
+import com.evandro.e_commerce.customer.repository.CustomerRepository;
 import com.evandro.e_commerce.order.exception.OrderNotFoundException;
 import com.evandro.e_commerce.order.model.Order;
 import com.evandro.e_commerce.order.repository.OrderRepository;
@@ -19,21 +22,21 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final ProductService productService; 
-    // private final CustomerRepository customerRepository; 
+    private final CustomerRepository customerRepository; 
 
-    public OrderServiceImpl(OrderRepository orderRepository, ProductService productService/* , CustomerRepository customerRepository*/) {
+    public OrderServiceImpl(OrderRepository orderRepository, ProductService productService , CustomerRepository customerRepository) {
         this.orderRepository = orderRepository;
         this.productService = productService;
-        // this.customerRepository = customerRepository;
+        this.customerRepository = customerRepository;
     }
 
-    // @Override
-    // public Order createOrder(UUID customerId) {
-    //     Customer customer = customerRepository.findById(customerId)
-    //             .orElseThrow(() -> new CustomerNotFoundException("Customer with ID " + customerId + " not found."));
-    //     Order order = new Order(customer);
-    //     return orderRepository.save(order);
-    // }
+    @Override
+    public Order createOrder(UUID customerId) {
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer with ID " + customerId + " not found."));
+        Order order = new Order(customer);
+        return orderRepository.save(order);
+    }
 
     @Override
     public Optional<Order> findOrderById(UUID orderId) {

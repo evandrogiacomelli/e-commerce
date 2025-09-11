@@ -23,11 +23,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 
+import com.evandro.e_commerce.customer.exception.CustomerNotFoundException;
 import com.evandro.e_commerce.customer.model.Customer;
 import com.evandro.e_commerce.customer.model.CustomerAddress;
 import com.evandro.e_commerce.customer.model.CustomerDocuments;
 import com.evandro.e_commerce.customer.model.CustomerRegisterInfo;
 import com.evandro.e_commerce.customer.model.CustomerStatus;
+import com.evandro.e_commerce.customer.repository.CustomerRepository;
 import com.evandro.e_commerce.order.exception.OrderNotFoundException;
 import com.evandro.e_commerce.order.model.Order;
 import com.evandro.e_commerce.order.model.OrderStatus;
@@ -43,8 +45,8 @@ public class OrderServiceTest {
     private OrderRepository orderRepository;
     @Mock
     private ProductService productService;
-    // @Mock
-    // private CustomerRepository customerRepository;
+    @Mock
+    private CustomerRepository customerRepository;
 
     @InjectMocks
     private OrderServiceImpl orderService;
@@ -63,36 +65,38 @@ public class OrderServiceTest {
 
         testProduct = new Product("Test Product", "Description", new BigDecimal("100.00"));
 
-        // when(customerRepository.findById(testCustomer.getId())).thenReturn(Optional.of(testCustomer));
+        when(customerRepository.findById(testCustomer.getId())).thenReturn(Optional.of(testCustomer));
         when(productService.findProductById(testProduct.getId())).thenReturn(Optional.of(testProduct));
         when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(orderRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
     }
 
-    // @Test
-    // @DisplayName("Should create an order successfully")
-    // void shouldCreateOrderSuccessfully() {
-    //     // Act
-    //     Order createdOrder = orderService.createOrder(testCustomer.getId());
-    //     // Assert
-    //     assertNotNull(createdOrder);
-    //     assertEquals(testCustomer, createdOrder.getCustomer());
-    //     assertEquals(OrderStatus.OPEN, createdOrder.getStatus());
-    //     assertEquals(PaymentStatus.PENDING, createdOrder.getPaymentStatus());
-    //     verify(customerRepository, times(1)).findById(testCustomer.getId());
-    //     verify(orderRepository, times(1)).save(any(Order.class));
-    // }
-    // @Test
-    // @DisplayName("Should throw CustomerNotFoundException when creating order for non-existent customer")
-    // void shouldThrowCustomerNotFoundExceptionWhenCreatingOrderForNonExistentCustomer() {
-    //     // Arrange
-    //     UUID nonExistentCustomerId = UUID.randomUUID();
-    //     // when(customerRepository.findById(nonExistentCustomerId)).thenReturn(Optional.empty());
-    //     // Act & Assert
-    //     // assertThrows(CustomerNotFoundException.class, () -> orderService.createOrder(nonExistentCustomerId));
-    //     // verify(customerRepository, times(1)).findById(nonExistentCustomerId);
-    //     verify(orderRepository, never()).save(any(Order.class));
-    // }
+    @Test
+    @DisplayName("Should create an order successfully")
+    void shouldCreateOrderSuccessfully() {
+        // Act
+        Order createdOrder = orderService.createOrder(testCustomer.getId());
+        // Assert
+        assertNotNull(createdOrder);
+        assertEquals(testCustomer, createdOrder.getCustomer());
+        assertEquals(OrderStatus.OPEN, createdOrder.getStatus());
+        assertEquals(PaymentStatus.PENDING, createdOrder.getPaymentStatus());
+        verify(customerRepository, times(1)).findById(testCustomer.getId());
+        verify(orderRepository, times(1)).save(any(Order.class));
+    }
+
+    @Test
+    @DisplayName("Should throw CustomerNotFoundException when creating order for non-existent customer")
+    void shouldThrowCustomerNotFoundExceptionWhenCreatingOrderForNonExistentCustomer() {
+        // Arrange
+        UUID nonExistentCustomerId = UUID.randomUUID();
+        when(customerRepository.findById(nonExistentCustomerId)).thenReturn(Optional.empty());
+        // Act & Assert
+        assertThrows(CustomerNotFoundException.class, () -> orderService.createOrder(nonExistentCustomerId));
+        verify(customerRepository, times(1)).findById(nonExistentCustomerId);
+        verify(orderRepository, never()).save(any(Order.class));
+    }
+
     @Test
     @DisplayName("Should find order by ID")
     void shouldFindOrderById() {
