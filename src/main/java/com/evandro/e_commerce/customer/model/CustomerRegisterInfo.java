@@ -8,6 +8,8 @@ public class CustomerRegisterInfo {
     private CustomerStatus status;
     private LocalDateTime inactiveIn;
 
+    public CustomerRegisterInfo() {}
+
     public CustomerRegisterInfo(CustomerStatus status) {
         this.registerDate = LocalDateTime.now();
         this.lastAccess = LocalDateTime.now();

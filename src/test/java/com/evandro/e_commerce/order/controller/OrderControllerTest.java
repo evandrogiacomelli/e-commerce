@@ -1,6 +1,7 @@
 package com.evandro.e_commerce.order.controller;
 
- import java.math.BigDecimal;
+ import java.lang.reflect.Field;
+    import java.math.BigDecimal;
     import java.time.LocalDate;
     import java.util.Arrays;
     import java.util.List;
@@ -72,10 +73,13 @@ package com.evandro.e_commerce.order.controller;
             CustomerAddress addr = new CustomerAddress("12345-678", "Test Street", 100);
             CustomerRegisterInfo info = new CustomerRegisterInfo(CustomerStatus.ACTIVE);
             testCustomer = new Customer(doc, addr, info);
+            setCustomerId(testCustomer, UUID.randomUUID());
 
             testProduct = new Product("Test Product", "Description", new BigDecimal("100.00"));
+            setProductId(testProduct, UUID.randomUUID());
 
             testOrder = new Order(testCustomer);
+            setOrderId(testOrder, UUID.randomUUID());
             testOrderItem = new OrderItem(testProduct, 1, new BigDecimal("90.00"));
             testOrder.addItem(testProduct, 1, new BigDecimal("90.00"));
 
@@ -575,5 +579,35 @@ package com.evandro.e_commerce.order.controller;
                     .andExpect(status().isBadRequest());
 
             verify(orderService, times(1)).cancelOrder(testOrder.getId());
+        }
+
+        private void setCustomerId(Customer customer, UUID id) {
+            try {
+                Field field = Customer.class.getDeclaredField("id");
+                field.setAccessible(true);
+                field.set(customer, id);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to set customer ID for test", e);
+            }
+        }
+
+        private void setProductId(Product product, UUID id) {
+            try {
+                Field field = Product.class.getDeclaredField("id");
+                field.setAccessible(true);
+                field.set(product, id);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to set product ID for test", e);
+            }
+        }
+
+        private void setOrderId(Order order, UUID id) {
+            try {
+                Field field = Order.class.getDeclaredField("id");
+                field.setAccessible(true);
+                field.set(order, id);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to set order ID for test", e);
+            }
         }
 }

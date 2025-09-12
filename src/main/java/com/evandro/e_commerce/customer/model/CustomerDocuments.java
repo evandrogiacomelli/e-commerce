@@ -8,6 +8,8 @@ public class CustomerDocuments {
     private String cpf;
     private String rg;
 
+    public CustomerDocuments() {}
+
     public CustomerDocuments(String name, LocalDate birthDate, String cpf, String rg) {
         this.name = name;
         this.birthDate = birthDate;

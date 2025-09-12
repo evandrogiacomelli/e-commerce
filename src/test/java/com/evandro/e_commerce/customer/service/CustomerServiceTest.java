@@ -7,10 +7,13 @@ import com.evandro.e_commerce.customer.exception.InvalidCpfException;
 import com.evandro.e_commerce.customer.exception.InvalidCustomerDataException;
 import com.evandro.e_commerce.customer.model.*;
 import com.evandro.e_commerce.customer.repository.CustomerRepository;
-import com.evandro.e_commerce.customer.repository.InMemoryCustomerRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,16 +22,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@SpringBootTest
+@Transactional
 public class CustomerServiceTest {
 
+    @Autowired
     private CustomerService customerService;
+    
+    @Autowired
+    private CustomerRepository customerRepository;
+    
     private CustomerRequest validRequest;
 
     @BeforeEach
     void setUp() {
-        CustomerRepository customerRepository = new InMemoryCustomerRepository();
-        customerService = new CustomerServiceImpl(customerRepository);
-
+        customerRepository.deleteAll();
+        
         validRequest = new CustomerRequest("Evandro", LocalDate.of(1994, 10, 5),
                 "055.988.200-77", "10.444.234-2", "83200-200", "rua dos canarios", 44);
     }

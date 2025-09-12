@@ -5,6 +5,8 @@ public class CustomerAddress {
     private String street;
     private int number;
 
+    public CustomerAddress() {}
+
     public CustomerAddress(String zipCode, String street, int number) {
         this.zipCode = zipCode;
         this.street = street;

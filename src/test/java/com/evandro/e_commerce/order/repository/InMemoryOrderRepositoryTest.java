@@ -1,5 +1,6 @@
 package com.evandro.e_commerce.order.repository;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -37,11 +38,13 @@ public class InMemoryOrderRepositoryTest {
         CustomerAddress addr1 = new CustomerAddress("10000-000", "Street A", 1);
         CustomerRegisterInfo info1 = new CustomerRegisterInfo(CustomerStatus.ACTIVE);
         customer1 = new Customer(doc1, addr1, info1);
+        setCustomerId(customer1, UUID.randomUUID());
 
         CustomerDocuments doc2 = new CustomerDocuments("Customer Two", LocalDate.of(1990, 2, 2), "222.222.222-22", "7654321");
         CustomerAddress addr2 = new CustomerAddress("20000-000", "Street B", 2);
         CustomerRegisterInfo info2 = new CustomerRegisterInfo(CustomerStatus.ACTIVE);
         customer2 = new Customer(doc2, addr2, info2);
+        setCustomerId(customer2, UUID.randomUUID());
 
         product = new Product("Test Product", "Description", new BigDecimal("100.00"));
     }
@@ -167,5 +170,15 @@ public class InMemoryOrderRepositoryTest {
         assertTrue(updatedOrder.isPresent());
         assertEquals(order.getStatus(), updatedOrder.get().getStatus());
         assertEquals(order.getTotalValue(), updatedOrder.get().getTotalValue());
+    }
+    
+    private void setCustomerId(Customer customer, UUID id) {
+        try {
+            Field idField = Customer.class.getDeclaredField("id");
+            idField.setAccessible(true);
+            idField.set(customer, id);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to set customer ID for test", e);
+        }
     }
 }

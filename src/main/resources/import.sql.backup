@@ -1,0 +1,2 @@
+INSERT INTO products (id, name, description, price, status, created_at, updated_at) VALUES
+('a1b2c3d4-e5f6-4a7b-8c9d-1e2f3a4b5c6d', 'Gaming Laptop', 'High performance gaming laptop', 2499.99, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

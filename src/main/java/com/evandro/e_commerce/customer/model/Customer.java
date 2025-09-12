@@ -9,7 +9,7 @@ import java.util.UUID;
 @Table(name = "customers")
 public class Customer {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(columnDefinition = "UUID")
     private UUID id;
     
@@ -32,7 +32,6 @@ public class Customer {
 
     public Customer(CustomerDocuments documents,
                     CustomerAddress address, CustomerRegisterInfo registerInfo) {
-        this.id = UUID.randomUUID();
         this.documents = documents;
         this.address = address;
         this.registerInfo = registerInfo;
