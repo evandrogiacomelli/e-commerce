@@ -26,7 +26,7 @@ class CustomerDocumentsValidatorTest {
     }
 
     @Test
-    @DisplayName("Não deve lançar exceção para um documento válido")
+    @DisplayName("Should not throw exception for a valid document")
     void shouldNotThrowExceptionForValidDocument() {
         var validDocuments = new CustomerDocuments("John Doe",
                 LocalDate.of(1990, 5, 15),
@@ -37,7 +37,7 @@ class CustomerDocumentsValidatorTest {
     }
 
     @Test
-    @DisplayName("Deve lançar InvalidCustomerDataException para documento nulo")
+    @DisplayName("Should throw InvalidCustomerDataException for null document")
     void shouldThrowExceptionForNullDocument() {
         assertThrows(InvalidCustomerDataException.class, () -> {
             validator.validate(null);
@@ -45,7 +45,7 @@ class CustomerDocumentsValidatorTest {
     }
 
     @Test
-    @DisplayName("Deve lançar InvalidCustomerDataException para nome nulo")
+    @DisplayName("Should throw InvalidCustomerDataException for null name")
     void shouldThrowExceptionForNullName() {
         var documentsWithNullName = new CustomerDocuments(null,
                 LocalDate.of(1990, 5, 15),
@@ -58,7 +58,7 @@ class CustomerDocumentsValidatorTest {
     }
 
     @Test
-    @DisplayName("Deve lançar InvalidCpfException para CPF nulo")
+    @DisplayName("Should throw InvalidCpfException for null CPF")
     void shouldThrowExceptionForNullCpf() {
         var documentsWithNullCpf = new CustomerDocuments("Jane Doe",
                 LocalDate.of(1995, 1, 1),
@@ -70,10 +70,9 @@ class CustomerDocumentsValidatorTest {
         });
     }
 
-    // Usando um teste parametrizado para testar vários CPFs inválidos de uma só vez
     @ParameterizedTest
     @ValueSource(strings = {"123.456.789-000", "11122233344", "abc.def.ghi-jk", "111.222.333-AB"})
-    @DisplayName("Deve lançar InvalidCpfException para CPF com formato inválido")
+    @DisplayName("Should throw InvalidCpfException for invalid CPF format")
     void shouldThrowExceptionForInvalidCpfFormat(String invalidCpf) {
         var documentsWithInvalidCpf = new CustomerDocuments("Jane Doe",
                 LocalDate.of(1995, 1, 1),
@@ -86,7 +85,7 @@ class CustomerDocumentsValidatorTest {
     }
 
     @Test
-    @DisplayName("Deve lançar InvalidRgException para RG nulo")
+    @DisplayName("Should throw InvalidRgException for null RG")
     void shouldThrowExceptionForNullRg() {
         var documentsWithNullRg = new CustomerDocuments("Peter Pan",
                 LocalDate.of(2000, 10, 20),
@@ -97,7 +96,7 @@ class CustomerDocumentsValidatorTest {
     }
 
     @Test
-    @DisplayName("Deve lançar InvalidRgException para RG vazio ou em branco")
+    @DisplayName("Should throw InvalidRgException for empty or blank RG")
     void shouldThrowExceptionForEmptyOrBlankRg() {
         var documentsWithEmptyRg = new CustomerDocuments("Peter Pan",
                 LocalDate.of(2000, 10, 20),
@@ -107,7 +106,6 @@ class CustomerDocumentsValidatorTest {
                 LocalDate.of(2000, 10, 20),
                 "444.555.666-77",
                 "  ");
-
 
         assertThrows(InvalidRgException.class, () -> validator.validate(documentsWithEmptyRg));
         assertThrows(InvalidRgException.class, () -> validator.validate(documentsWithBlankRg));
