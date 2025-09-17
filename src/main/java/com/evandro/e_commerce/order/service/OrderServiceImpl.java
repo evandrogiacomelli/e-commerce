@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 
 import com.evandro.e_commerce.customer.exception.CustomerNotFoundException;
 import com.evandro.e_commerce.customer.model.Customer;
+import com.evandro.e_commerce.customer.model.CustomerStatus;
 import com.evandro.e_commerce.customer.repository.CustomerRepository;
+import com.evandro.e_commerce.order.exception.InvalidOrderDataException;
 import com.evandro.e_commerce.order.exception.OrderNotFoundException;
 import com.evandro.e_commerce.order.model.Order;
 import com.evandro.e_commerce.order.repository.OrderRepository;
@@ -21,10 +23,19 @@ import com.evandro.e_commerce.product.service.ProductService;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
-    private final ProductService productService; 
-    private final CustomerRepository customerRepository; 
+    private final ProductService productService;
+    private final CustomerRepository customerRepository;
 
-    public OrderServiceImpl(OrderRepository orderRepository, ProductService productService , CustomerRepository customerRepository) {
+    private void validateOrderCreationInputs(Customer customer) {
+        if (customer == null) {
+            throw new InvalidOrderDataException("Customer cannot be null when creating an order.");
+        }
+        if (customer.getRegisterInfo().getStatus() != CustomerStatus.ACTIVE) {
+            throw new InvalidOrderDataException("Order cannot be created for an inactive customer.");
+        }
+    }
+
+    public OrderServiceImpl(OrderRepository orderRepository, ProductService productService, CustomerRepository customerRepository) {
         this.orderRepository = orderRepository;
         this.productService = productService;
         this.customerRepository = customerRepository;
@@ -34,6 +45,7 @@ public class OrderServiceImpl implements OrderService {
     public Order createOrder(UUID customerId) {
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new CustomerNotFoundException("Customer with ID " + customerId + " not found."));
+        validateOrderCreationInputs(customer);
         Order order = new Order(customer);
         return orderRepository.save(order);
     }

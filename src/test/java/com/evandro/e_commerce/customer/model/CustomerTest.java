@@ -1,11 +1,12 @@
 package com.evandro.e_commerce.customer.model;
 
+import java.time.LocalDate;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.time.LocalDate;
 
 public class CustomerTest {
 
@@ -27,7 +28,7 @@ public class CustomerTest {
         Customer customer = new Customer(documents, address, registerInfo);
 
         assertNotNull(customer);
-        assertNull(customer.getId()); // ID is null until entity is persisted
+        assertNotNull(customer.getId()); // ID is null until entity is persisted
         assertEquals(documents, customer.getDocuments());
         assertEquals(address, customer.getAddress());
         assertEquals(registerInfo, customer.getRegisterInfo());

@@ -7,8 +7,9 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.evandro.e_commerce.product.exception.InvalidProductDataException;
+import com.evandro.e_commerce.product.exception.InvalidProductPriceException;
 import com.evandro.e_commerce.product.exception.ProductNotFoundException;
-import com.evandro.e_commerce.product.factory.ProductFactory;
 import com.evandro.e_commerce.product.model.Product;
 import com.evandro.e_commerce.product.repository.ProductRepository;
 
@@ -21,9 +22,22 @@ public class ProductServiceImpl implements ProductService {
         this.productRepository = productRepository;
     }
 
+    private void validateProductInputs(String name, String description, BigDecimal price) {
+            if (name == null || name.trim().isEmpty()) {
+                throw new InvalidProductDataException("Product name cannot be null or empty.");
+            }
+            if (description == null || description.trim().isEmpty()) {
+                throw new InvalidProductDataException("Product description cannot be null or empty.");
+            }
+            if (price == null || price.compareTo(BigDecimal.ZERO) <= 0) {
+                throw new InvalidProductPriceException("Product price must be greater than zero.");
+            }
+        }
+
     @Override
     public Product createProduct(String name, String description, BigDecimal price) {
-        Product product = ProductFactory.create(name, description, price);
+        validateProductInputs(name, description, price);
+        Product product = new Product(name, description, price);
         return productRepository.save(product);
     }
 
@@ -47,7 +61,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product with ID " + id + " not found."));
 
-        ProductFactory.create(name, description, price);
+        validateProductInputs(name, description, price);
 
         product.update(name, description, price);
         return productRepository.save(product); 

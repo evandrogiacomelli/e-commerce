@@ -1,9 +1,17 @@
 package com.evandro.e_commerce.customer.model;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "customers")
@@ -28,13 +36,17 @@ public class Customer {
     @Transient
     private ArrayList<CustomerPaymentMethods> paymentMethods;
 
-    public Customer() {}
-
+    public Customer() {
+        this.id = UUID.randomUUID(); 
+        this.history = new ArrayList<>();
+        this.paymentMethods = new ArrayList<>();
+    }
     public Customer(CustomerDocuments documents,
                     CustomerAddress address, CustomerRegisterInfo registerInfo) {
         this.documents = documents;
         this.address = address;
         this.registerInfo = registerInfo;
+        this.id = UUID.randomUUID(); 
         this.history = new ArrayList<>();
         this.paymentMethods = new ArrayList<>();
     }

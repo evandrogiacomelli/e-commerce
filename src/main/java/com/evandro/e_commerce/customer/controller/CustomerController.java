@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.evandro.e_commerce.customer.dto.CustomerCreationRequest;
 import com.evandro.e_commerce.customer.dto.CustomerRequest;
 import com.evandro.e_commerce.customer.dto.CustomerResponse;
 import com.evandro.e_commerce.customer.exception.CustomerNotFoundException;
@@ -31,7 +32,7 @@ public class CustomerController {
     }
 
     @PostMapping
-    public ResponseEntity<CustomerResponse> createCustomer(@RequestBody CustomerRequest request) {
+    public ResponseEntity<CustomerResponse> createCustomer(@RequestBody CustomerCreationRequest request) {
         try {
             CustomerResponse customer = customerService.createCustomer(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(customer);

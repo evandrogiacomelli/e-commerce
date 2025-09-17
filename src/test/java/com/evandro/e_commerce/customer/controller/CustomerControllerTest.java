@@ -7,6 +7,7 @@ import com.evandro.e_commerce.customer.exception.CustomerNotFoundException;
 import com.evandro.e_commerce.customer.model.CustomerStatus;
 import com.evandro.e_commerce.customer.service.CustomerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import com.evandro.e_commerce.customer.dto.CustomerCreationRequest;
 
 @WebMvcTest(CustomerController.class)
 public class CustomerControllerTest {
@@ -59,7 +62,7 @@ public class CustomerControllerTest {
     @Test
     @DisplayName("Should create a new customer and return 201 CREATED")
     void shouldCreateCustomer() throws Exception {
-        when(customerService.createCustomer(any(CustomerRequest.class))).thenReturn(validResponse);
+        when(customerService.createCustomer(any(CustomerCreationRequest.class))).thenReturn(validResponse);
         
         mockMvc.perform(post("/customers")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -73,7 +76,7 @@ public class CustomerControllerTest {
     @Test
     @DisplayName("Should return 400 BAD REQUEST when creating customer with invalid data")
     void shouldReturnBadRequestWhenCreatingCustomerWithInvalidData() throws Exception {
-        when(customerService.createCustomer(any(CustomerRequest.class)))
+        when(customerService.createCustomer(any(CustomerCreationRequest.class)))
                 .thenThrow(new InvalidCustomerDataException("Invalid data"));
 
         CustomerRequest invalidRequest = new CustomerRequest(null, LocalDate.of(1994, 10, 5),

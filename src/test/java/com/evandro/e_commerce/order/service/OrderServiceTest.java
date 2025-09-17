@@ -30,6 +30,7 @@ import com.evandro.e_commerce.customer.model.CustomerDocuments;
 import com.evandro.e_commerce.customer.model.CustomerRegisterInfo;
 import com.evandro.e_commerce.customer.model.CustomerStatus;
 import com.evandro.e_commerce.customer.repository.CustomerRepository;
+import com.evandro.e_commerce.order.exception.InvalidOrderDataException;
 import com.evandro.e_commerce.order.exception.OrderNotFoundException;
 import com.evandro.e_commerce.order.model.Order;
 import com.evandro.e_commerce.order.model.OrderStatus;
@@ -52,6 +53,7 @@ public class OrderServiceTest {
     private OrderServiceImpl orderService;
 
     private Customer testCustomer;
+    private Customer inactiveCustomer;
     private Product testProduct;
 
     @BeforeEach
@@ -63,9 +65,13 @@ public class OrderServiceTest {
         CustomerRegisterInfo info = new CustomerRegisterInfo(CustomerStatus.ACTIVE);
         testCustomer = new Customer(doc, addr, info);
 
+        CustomerRegisterInfo inactiveInfo = new CustomerRegisterInfo(CustomerStatus.INACTIVE);
+        inactiveCustomer = new Customer(doc, addr, inactiveInfo);
+
         testProduct = new Product("Test Product", "Description", new BigDecimal("100.00"));
 
         when(customerRepository.findById(testCustomer.getId())).thenReturn(Optional.of(testCustomer));
+        when(customerRepository.findById(inactiveCustomer.getId())).thenReturn(Optional.of(inactiveCustomer)); 
         when(productService.findProductById(testProduct.getId())).thenReturn(Optional.of(testProduct));
         when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(orderRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
@@ -76,6 +82,7 @@ public class OrderServiceTest {
     void shouldCreateOrderSuccessfully() {
         // Act
         Order createdOrder = orderService.createOrder(testCustomer.getId());
+
         // Assert
         assertNotNull(createdOrder);
         assertEquals(testCustomer, createdOrder.getCustomer());
@@ -91,9 +98,20 @@ public class OrderServiceTest {
         // Arrange
         UUID nonExistentCustomerId = UUID.randomUUID();
         when(customerRepository.findById(nonExistentCustomerId)).thenReturn(Optional.empty());
+
         // Act & Assert
         assertThrows(CustomerNotFoundException.class, () -> orderService.createOrder(nonExistentCustomerId));
         verify(customerRepository, times(1)).findById(nonExistentCustomerId);
+        verify(orderRepository, never()).save(any(Order.class));
+    }
+
+    @Test
+    @DisplayName("Should throw InvalidOrderDataException when creating order for inactive customer")
+    void shouldThrowInvalidOrderDataExceptionWhenCreatingOrderForInactiveCustomer() {
+        // Act & Assert
+        assertThrows(InvalidOrderDataException.class, () -> orderService.createOrder(inactiveCustomer.getId()),
+                "Order cannot be created for an inactive customer.");
+        verify(customerRepository, times(1)).findById(inactiveCustomer.getId());
         verify(orderRepository, never()).save(any(Order.class));
     }
 
