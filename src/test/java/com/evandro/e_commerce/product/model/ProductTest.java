@@ -22,7 +22,7 @@ public class ProductTest {
 
         // Assert
         assertNotNull(product);
-        assertNotNull(product.getId());
+        // ID is null until entity is persisted by JPA
         assertEquals(name, product.getName());
         assertEquals(description, product.getDescription());
         assertEquals(price, product.getPrice());

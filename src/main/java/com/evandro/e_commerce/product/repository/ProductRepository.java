@@ -1,18 +1,22 @@
 package com.evandro.e_commerce.product.repository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
 import com.evandro.e_commerce.product.model.Product;
+import com.evandro.e_commerce.product.model.ProductStatus;
 
-public interface ProductRepository {
+@Repository
+public interface ProductRepository extends JpaRepository<Product, UUID> {
 
-    Product save(Product product);
+    @Query("SELECT p FROM Product p WHERE p.status = :status")
+    List<Product> findByStatus(ProductStatus status);
 
-    Optional<Product> findById(UUID id);
-
-    List<Product> findAll();
-
-    List<Product> findActiveProducts();
+    default List<Product> findActiveProducts() {
+        return findByStatus(ProductStatus.ACTIVE);
+    }
 }

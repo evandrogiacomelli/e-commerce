@@ -95,6 +95,7 @@ public class ProductControllerTest {
         // Arrange
         UUID productId = UUID.randomUUID();
         Product mockProduct = new Product("Laptop", "Gaming Laptop", new BigDecimal("8000.00"));
+        setProductId(mockProduct, productId);
         when(productService.findProductById(productId)).thenReturn(Optional.of(mockProduct));
 
         // Act & Assert
@@ -281,5 +282,15 @@ public class ProductControllerTest {
                 .andExpect(status().isNotFound());
 
         verify(productService, times(1)).activateProduct(nonExistentId);
+    }
+
+    private void setProductId(Product product, UUID id) {
+        try {
+            java.lang.reflect.Field idField = Product.class.getDeclaredField("id");
+            idField.setAccessible(true);
+            idField.set(product, id);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to set product ID", e);
+        }
     }
 }

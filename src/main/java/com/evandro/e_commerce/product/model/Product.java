@@ -36,7 +36,6 @@ public class Product {
     public Product() {}
 
     public Product(String name, String description, BigDecimal price) {
-        this.id = UUID.randomUUID();
         this.name = name;
         this.description = description;
         this.price = price;

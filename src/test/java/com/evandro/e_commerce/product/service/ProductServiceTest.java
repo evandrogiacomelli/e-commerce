@@ -13,25 +13,29 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import com.evandro.e_commerce.product.exception.InvalidProductDataException;
 import com.evandro.e_commerce.product.exception.InvalidProductPriceException;
 import com.evandro.e_commerce.product.exception.ProductNotFoundException;
 import com.evandro.e_commerce.product.model.Product;
 import com.evandro.e_commerce.product.model.ProductStatus;
-import com.evandro.e_commerce.product.repository.InMemoryProductRepository;
 import com.evandro.e_commerce.product.repository.ProductRepository;
 
+@SpringBootTest
 public class ProductServiceTest {
 
+    @Autowired
     private ProductService productService;
-        private ProductRepository productRepository;
 
-        @BeforeEach
-        void setUp() {
-            productRepository = new InMemoryProductRepository();
-            productService = new ProductServiceImpl(productRepository);
-        }
+    @Autowired
+    private ProductRepository productRepository;
+
+    @BeforeEach
+    void setUp() {
+        productRepository.deleteAll();
+    }
 
         @Test
         @DisplayName("Should create and save a new product")
