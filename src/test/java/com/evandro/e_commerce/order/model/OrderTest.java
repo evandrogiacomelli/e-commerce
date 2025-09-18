@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -35,7 +36,9 @@ public class OrderTest {
         customer = new Customer(documents, address, registerInfo);
 
         product1 = new Product("Laptop", "Powerful laptop", new BigDecimal("5000.00"));
+        setProductId(product1, UUID.randomUUID());
         product2 = new Product("Mouse", "Gaming mouse", new BigDecimal("200.00"));
+        setProductId(product2, UUID.randomUUID());
     }
 
     @Test
@@ -46,7 +49,6 @@ public class OrderTest {
 
         // Assert
         assertNotNull(order);
-        assertNotNull(order.getId());
         assertNotNull(order.getCreatedAt());
         assertEquals(customer, order.getCustomer());
         assertEquals(OrderStatus.OPEN, order.getStatus());
@@ -131,8 +133,9 @@ public class OrderTest {
         order.addItem(product1, 1, new BigDecimal("100.00"));
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> order.removeItem(UUID.randomUUID()),
-                "Product with ID " + UUID.randomUUID() + " not found in order.");
+        UUID randomId = UUID.randomUUID();
+        assertThrows(IllegalArgumentException.class, () -> order.removeItem(randomId),
+                "Product with ID " + randomId + " not found in order.");
     }
 
     @Test
@@ -348,5 +351,15 @@ public class OrderTest {
         // Act & Assert
         assertThrows(IllegalStateException.class, order::cancelOrder,
                 "Cannot cancel an order that is already FINISHED or PAID.");
+    }
+
+    private void setProductId(Product product, UUID id) {
+        try {
+            Field field = Product.class.getDeclaredField("id");
+            field.setAccessible(true);
+            field.set(product, id);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to set product ID for test", e);
+        }
     }
 }

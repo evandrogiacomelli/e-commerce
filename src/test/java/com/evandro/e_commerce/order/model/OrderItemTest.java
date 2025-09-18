@@ -26,7 +26,6 @@ public class OrderItemTest {
 
         // Assert
         assertNotNull(orderItem);
-        assertNotNull(orderItem.getId());
         assertEquals(product, orderItem.getProduct());
         assertEquals(quantity, orderItem.getQuantity());
         assertEquals(salePrice, orderItem.getSalePrice());
