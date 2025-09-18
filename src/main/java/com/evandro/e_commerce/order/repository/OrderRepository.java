@@ -1,18 +1,18 @@
 package com.evandro.e_commerce.order.repository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import com.evandro.e_commerce.order.model.Order;
 
-public interface OrderRepository {
+@Repository
+public interface OrderRepository extends JpaRepository<Order, UUID> {
 
-    Order save(Order order);
-
-    Optional<Order> findById(UUID id);
-
-    List<Order> findAll();
-
-    List<Order> findByCustomerId(UUID customerId);
+    @Query("SELECT o FROM Order o WHERE o.customer.id = :customerId")
+    List<Order> findByCustomerId(@Param("customerId") UUID customerId);
 }
