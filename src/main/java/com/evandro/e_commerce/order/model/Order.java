@@ -8,27 +8,49 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import jakarta.persistence.*;
 import com.evandro.e_commerce.customer.model.Customer;
 import com.evandro.e_commerce.product.model.Product;
 
+@Entity
+@Table(name = "orders")
 public class Order {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(columnDefinition = "UUID")
     private UUID id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private OrderStatus status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_status", nullable = false)
     private PaymentStatus paymentStatus;
-    private final List<OrderItem> items;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<OrderItem> items;
+
+    public Order() {
+        this.items = new ArrayList<>();
+    }
 
     public Order(Customer customer) {
         if (customer == null) {
             throw new IllegalArgumentException("Customer cannot be null for an order.");
         }
-        this.id = UUID.randomUUID();
         this.customer = customer;
         this.createdAt = LocalDateTime.now();
-        this.status = OrderStatus.OPEN; 
-        this.paymentStatus = PaymentStatus.PENDING; 
+        this.status = OrderStatus.OPEN;
+        this.paymentStatus = PaymentStatus.PENDING;
         this.items = new ArrayList<>();
     }
 
@@ -67,7 +89,9 @@ public class Order {
         if (existingItem.isPresent()) {
             existingItem.get().updateQuantity(existingItem.get().getQuantity() + quantity);
         } else {
-            items.add(new OrderItem(product, quantity, salePrice));
+            OrderItem newItem = new OrderItem(product, quantity, salePrice);
+            newItem.setOrder(this);
+            items.add(newItem);
         }
     }
 
