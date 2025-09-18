@@ -37,7 +37,6 @@ public class Customer {
     private ArrayList<CustomerPaymentMethods> paymentMethods;
 
     public Customer() {
-        this.id = UUID.randomUUID(); 
         this.history = new ArrayList<>();
         this.paymentMethods = new ArrayList<>();
     }
@@ -46,7 +45,6 @@ public class Customer {
         this.documents = documents;
         this.address = address;
         this.registerInfo = registerInfo;
-        this.id = UUID.randomUUID(); 
         this.history = new ArrayList<>();
         this.paymentMethods = new ArrayList<>();
     }

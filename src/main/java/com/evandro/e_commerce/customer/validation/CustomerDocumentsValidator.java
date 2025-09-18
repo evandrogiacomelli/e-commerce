@@ -13,7 +13,7 @@ public class CustomerDocumentsValidator implements Validator<CustomerDocuments>{
         if(documents == null){
             throw new InvalidCustomerDataException("Documents cannot be null");
         }
-        if(documents.getName() == null){
+        if(documents.getName() == null || documents.getName().trim().isEmpty()){
             throw new InvalidCustomerDataException("Name cannot be null or empty");
         }
         if (documents.getCpf() == null || !isValidCpf(documents.getCpf())) {

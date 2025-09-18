@@ -28,7 +28,7 @@ public class CustomerTest {
         Customer customer = new Customer(documents, address, registerInfo);
 
         assertNotNull(customer);
-        assertNotNull(customer.getId()); // ID is null until entity is persisted
+        // ID is null until entity is persisted by JPA
         assertEquals(documents, customer.getDocuments());
         assertEquals(address, customer.getAddress());
         assertEquals(registerInfo, customer.getRegisterInfo());

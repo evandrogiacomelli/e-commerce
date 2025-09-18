@@ -14,6 +14,7 @@ target/
 .sts4-cache
 
 CUSTOMER_TODO.md
+PRODUCT_H2_MIGRATION_TODO.md
 
 ### IntelliJ IDEA ###
 .idea/

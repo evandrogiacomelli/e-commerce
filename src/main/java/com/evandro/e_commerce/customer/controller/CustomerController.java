@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.evandro.e_commerce.customer.dto.CustomerCreationRequest;
 import com.evandro.e_commerce.customer.dto.CustomerRequest;
 import com.evandro.e_commerce.customer.dto.CustomerResponse;
+import com.evandro.e_commerce.customer.dto.CustomerDtoConverter;
 import com.evandro.e_commerce.customer.exception.CustomerNotFoundException;
 import com.evandro.e_commerce.customer.exception.InvalidCustomerDataException;
 import com.evandro.e_commerce.customer.service.CustomerService;
@@ -32,12 +33,17 @@ public class CustomerController {
     }
 
     @PostMapping
-    public ResponseEntity<CustomerResponse> createCustomer(@RequestBody CustomerCreationRequest request) {
+    public ResponseEntity<CustomerResponse> createCustomer(@RequestBody CustomerRequest request) {
         try {
-            CustomerResponse customer = customerService.createCustomer(request);
+            CustomerCreationRequest creationRequest = new CustomerCreationRequest(
+                CustomerDtoConverter.toCustomerDocuments(request),
+                CustomerDtoConverter.toCustomerAddress(request),
+                CustomerDtoConverter.toCustomerRegisterInfo()
+            );
+            CustomerResponse customer = customerService.createCustomer(creationRequest);
             return ResponseEntity.status(HttpStatus.CREATED).body(customer);
         } catch (InvalidCustomerDataException e) {
-            return ResponseEntity.badRequest().build(); 
+            return ResponseEntity.badRequest().build();
         }
     }
 

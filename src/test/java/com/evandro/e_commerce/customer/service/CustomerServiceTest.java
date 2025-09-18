@@ -16,7 +16,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.evandro.e_commerce.customer.dto.CustomerCreationRequest;
 import com.evandro.e_commerce.customer.dto.CustomerRequest;
@@ -32,7 +31,6 @@ import com.evandro.e_commerce.customer.model.CustomerStatus;
 import com.evandro.e_commerce.customer.repository.CustomerRepository;
 
 @SpringBootTest
-@Transactional
 public class CustomerServiceTest {
 
     @Autowired
