@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.evandro.e_commerce.product.dto.ProductRequest;
 import com.evandro.e_commerce.product.dto.ProductResponse;
-import com.evandro.e_commerce.product.exception.InvalidProductDataException;
-import com.evandro.e_commerce.product.exception.ProductNotFoundException;
 import com.evandro.e_commerce.product.model.Product;
 import com.evandro.e_commerce.product.service.ProductService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/products")
@@ -33,13 +33,9 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductResponse> createProduct(@RequestBody ProductRequest request) {
-        try {
-            Product product = productService.createProduct(request.getName(), request.getDescription(), request.getPrice());
-            return ResponseEntity.status(HttpStatus.CREATED).body(new ProductResponse(product));
-        } catch (InvalidProductDataException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<ProductResponse> createProduct(@Valid @RequestBody ProductRequest request) {
+        Product product = productService.createProduct(request.getName(), request.getDescription(), request.getPrice());
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ProductResponse(product));
     }
 
     @GetMapping("/{id}")
@@ -68,33 +64,19 @@ public class ProductController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponse> updateProduct(@PathVariable UUID id, @RequestBody ProductRequest request) {
-        try {
-            Product updatedProduct = productService.updateProduct(id, request.getName(), request.getDescription(), request.getPrice());
-            return ResponseEntity.ok(new ProductResponse(updatedProduct));
-        } catch (ProductNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (InvalidProductDataException  e) {
-            return ResponseEntity.badRequest().build();
-        }
+        Product updatedProduct = productService.updateProduct(id, request.getName(), request.getDescription(), request.getPrice());
+        return ResponseEntity.ok(new ProductResponse(updatedProduct));
     }
 
     @PatchMapping("/{id}/deactivate")
     public ResponseEntity<ProductResponse> deactivateProduct(@PathVariable UUID id) {
-        try {
-            Product deactivatedProduct = productService.deactivateProduct(id);
-            return ResponseEntity.ok(new ProductResponse(deactivatedProduct));
-        } catch (ProductNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        Product deactivatedProduct = productService.deactivateProduct(id);
+        return ResponseEntity.ok(new ProductResponse(deactivatedProduct));
     }
 
     @PatchMapping("/{id}/activate")
     public ResponseEntity<ProductResponse> activateProduct(@PathVariable UUID id) {
-        try {
-            Product activatedProduct = productService.activateProduct(id);
-            return ResponseEntity.ok(new ProductResponse(activatedProduct));
-        } catch (ProductNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        Product activatedProduct = productService.activateProduct(id);
+        return ResponseEntity.ok(new ProductResponse(activatedProduct));
     }
 }

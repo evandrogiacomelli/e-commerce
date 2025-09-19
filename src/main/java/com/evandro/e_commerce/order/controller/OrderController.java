@@ -16,15 +16,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.evandro.e_commerce.customer.exception.CustomerNotFoundException;
 import com.evandro.e_commerce.order.dto.OrderItemRequest;
 import com.evandro.e_commerce.order.dto.OrderRequest;
 import com.evandro.e_commerce.order.dto.OrderResponse;
-import com.evandro.e_commerce.order.exception.InvalidOrderDataException;
-import com.evandro.e_commerce.order.exception.OrderNotFoundException;
 import com.evandro.e_commerce.order.model.Order;
 import com.evandro.e_commerce.order.service.OrderService;
-import com.evandro.e_commerce.product.exception.ProductNotFoundException;
 
 @RestController
 @RequestMapping("/orders")
@@ -38,14 +34,8 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<OrderResponse> createOrder(@RequestBody OrderRequest request) {
-        try {
-            Order order = orderService.createOrder(request.getCustomerId());
-            return ResponseEntity.status(HttpStatus.CREATED).body(new OrderResponse(order));
-        } catch (CustomerNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (InvalidOrderDataException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        Order order = orderService.createOrder(request.getCustomerId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(new OrderResponse(order));
     }
 
     @GetMapping("/{orderId}")
@@ -74,85 +64,45 @@ public class OrderController {
 
     @PostMapping("/{orderId}/items")
     public ResponseEntity<OrderResponse> addItemToOrder(@PathVariable UUID orderId, @RequestBody OrderItemRequest request) {
-        try {
-            Order updatedOrder = orderService.addItemToOrder(orderId, request.getProductId(), request.getQuantity(), request.getSalePrice());
-            return ResponseEntity.ok(new OrderResponse(updatedOrder));
-        } catch (OrderNotFoundException | ProductNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        Order updatedOrder = orderService.addItemToOrder(orderId, request.getProductId(), request.getQuantity(), request.getSalePrice());
+        return ResponseEntity.ok(new OrderResponse(updatedOrder));
     }
 
     @DeleteMapping("/{orderId}/items/{productId}")
     public ResponseEntity<OrderResponse> removeItemFromOrder(@PathVariable UUID orderId, @PathVariable UUID productId) {
-        try {
-            Order updatedOrder = orderService.removeItemFromOrder(orderId, productId);
-            return ResponseEntity.ok(new OrderResponse(updatedOrder));
-        } catch (OrderNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        Order updatedOrder = orderService.removeItemFromOrder(orderId, productId);
+        return ResponseEntity.ok(new OrderResponse(updatedOrder));
     }
 
     @PutMapping("/{orderId}/items/{productId}")
     public ResponseEntity<OrderResponse> updateItemQuantityInOrder(@PathVariable UUID orderId, @PathVariable UUID productId, @RequestBody OrderItemRequest request) {
-        try {
-            Order updatedOrder = orderService.updateItemQuantityInOrder(orderId, productId, request.getQuantity());
-            return ResponseEntity.ok(new OrderResponse(updatedOrder));
-        } catch (OrderNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        Order updatedOrder = orderService.updateItemQuantityInOrder(orderId, productId, request.getQuantity());
+        return ResponseEntity.ok(new OrderResponse(updatedOrder));
+
     }
 
     @PatchMapping("/{orderId}/finalize")
     public ResponseEntity<OrderResponse> finalizeOrder(@PathVariable UUID orderId) {
-        try {
-            Order finalizedOrder = orderService.finalizeOrder(orderId);
-            return ResponseEntity.ok(new OrderResponse(finalizedOrder));
-        } catch (OrderNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        Order finalizedOrder = orderService.finalizeOrder(orderId);
+        return ResponseEntity.ok(new OrderResponse(finalizedOrder));
     }
 
     @PatchMapping("/{orderId}/pay")
     public ResponseEntity<OrderResponse> processPayment(@PathVariable UUID orderId) {
-        try {
-            Order paidOrder = orderService.processPayment(orderId);
-            return ResponseEntity.ok(new OrderResponse(paidOrder));
-        } catch (OrderNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        Order paidOrder = orderService.processPayment(orderId);
+        return ResponseEntity.ok(new OrderResponse(paidOrder));
     }
 
     @PatchMapping("/{orderId}/deliver")
     public ResponseEntity<OrderResponse> deliverOrder(@PathVariable UUID orderId) {
-        try {
-            Order deliveredOrder = orderService.deliverOrder(orderId);
-            return ResponseEntity.ok(new OrderResponse(deliveredOrder));
-        } catch (OrderNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        Order deliveredOrder = orderService.deliverOrder(orderId);
+        return ResponseEntity.ok(new OrderResponse(deliveredOrder));
     }
 
     @PatchMapping("/{orderId}/cancel")
     public ResponseEntity<OrderResponse> cancelOrder(@PathVariable UUID orderId) {
-        try {
-            Order cancelledOrder = orderService.cancelOrder(orderId);
-            return ResponseEntity.ok(new OrderResponse(cancelledOrder));
-        } catch (OrderNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        Order cancelledOrder = orderService.cancelOrder(orderId);
+        return ResponseEntity.ok(new OrderResponse(cancelledOrder));
+
     }
 }

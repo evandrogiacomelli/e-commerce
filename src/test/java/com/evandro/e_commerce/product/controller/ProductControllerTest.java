@@ -11,14 +11,13 @@ import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import org.mockito.Mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -28,7 +27,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.evandro.e_commerce.product.dto.ProductRequest;
-import com.evandro.e_commerce.product.exception.InvalidProductDataException;
 import com.evandro.e_commerce.product.exception.InvalidProductPriceException;
 import com.evandro.e_commerce.product.exception.ProductNotFoundException;
 import com.evandro.e_commerce.product.model.Product;
@@ -71,22 +69,12 @@ public class ProductControllerTest {
     @Test
     @DisplayName("Should return 400 BAD REQUEST when creating product with invalid data")
     void shouldReturnBadRequestWhenCreatingProductWithInvalidData() throws Exception {
-        // Arrange
-        String invalidName = null; 
-        String description = "Invalid product";
-        BigDecimal price = new BigDecimal("100.00");
-        ProductRequest request = new ProductRequest(invalidName, description, price);
+        String invalidProductJson = "{\"name\":null, \"price\":10.0}";
 
-        when(productService.createProduct(eq(invalidName), eq(description), eq(price)))
-                .thenThrow(new InvalidProductDataException("Name cannot be null"));
-
-        // Act & Assert
         mockMvc.perform(post("/products")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                .content(invalidProductJson))
                 .andExpect(status().isBadRequest());
-
-        verify(productService, times(1)).createProduct(eq(invalidName), eq(description), eq(price));
     }
 
     @Test
