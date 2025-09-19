@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.evandro.e_commerce.customer.exception.CustomerNotFoundException;
 import com.evandro.e_commerce.customer.model.Customer;
@@ -42,6 +43,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public Order createOrder(UUID customerId) {
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new CustomerNotFoundException("Customer with ID " + customerId + " not found."));
@@ -51,21 +53,25 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Order> findOrderById(UUID orderId) {
         return orderRepository.findById(orderId);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Order> listAllOrders() {
         return orderRepository.findAll();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Order> listOrdersByCustomerId(UUID customerId) {
         return orderRepository.findByCustomerId(customerId);
     }
 
     @Override
+    @Transactional
     public Order addItemToOrder(UUID orderId, UUID productId, int quantity, BigDecimal salePrice) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException("Order with ID " + orderId + " not found."));
@@ -78,6 +84,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public Order removeItemFromOrder(UUID orderId, UUID productId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException("Order with ID " + orderId + " not found."));
@@ -87,6 +94,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public Order updateItemQuantityInOrder(UUID orderId, UUID productId, int newQuantity) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException("Order with ID " + orderId + " not found."));
@@ -96,6 +104,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public Order finalizeOrder(UUID orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException("Order with ID " + orderId + " not found."));
@@ -105,6 +114,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public Order processPayment(UUID orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException("Order with ID " + orderId + " not found."));
@@ -114,6 +124,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public Order deliverOrder(UUID orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException("Order with ID " + orderId + " not found."));
@@ -123,6 +134,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public Order cancelOrder(UUID orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException("Order with ID " + orderId + " not found."));
