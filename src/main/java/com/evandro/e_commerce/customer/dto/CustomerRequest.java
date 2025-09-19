@@ -8,6 +8,7 @@ public class CustomerRequest {
     private LocalDate birthDate;
     private String cpf;
     private String rg;
+    private String email;
     private String zipCode;
     private String street;
     private int number;
@@ -20,6 +21,18 @@ public class CustomerRequest {
         this.birthDate = birthDate;
         this.cpf = cpf;
         this.rg = rg;
+        this.email = null;
+        this.zipCode = zipCode;
+        this.street = street;
+        this.number = number;
+    }
+
+    public CustomerRequest(String name, LocalDate birthDate, String cpf, String rg, String email, String zipCode, String street, int number) {
+        this.name = name;
+        this.birthDate = birthDate;
+        this.cpf = cpf;
+        this.rg = rg;
+        this.email = email;
         this.zipCode = zipCode;
         this.street = street;
         this.number = number;
@@ -39,6 +52,10 @@ public class CustomerRequest {
 
     public String getRg() {
         return rg;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public String getZipCode() {
@@ -67,6 +84,10 @@ public class CustomerRequest {
 
     public void setRg(String rg) {
         this.rg = rg;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public void setZipCode(String zipCode) {

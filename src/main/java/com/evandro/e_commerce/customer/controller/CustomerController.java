@@ -21,6 +21,7 @@ import com.evandro.e_commerce.customer.dto.CustomerDtoConverter;
 import com.evandro.e_commerce.customer.exception.CustomerNotFoundException;
 import com.evandro.e_commerce.customer.exception.InvalidCustomerDataException;
 import com.evandro.e_commerce.customer.service.CustomerService;
+import com.evandro.e_commerce.common.dto.ErrorMessage;
 
 @RestController
 @RequestMapping("/customers")
@@ -33,7 +34,7 @@ public class CustomerController {
     }
 
     @PostMapping
-    public ResponseEntity<CustomerResponse> createCustomer(@RequestBody CustomerRequest request) {
+    public ResponseEntity<Object> createCustomer(@RequestBody CustomerRequest request) {
         try {
             CustomerCreationRequest creationRequest = new CustomerCreationRequest(
                 CustomerDtoConverter.toCustomerDocuments(request),
@@ -43,15 +44,15 @@ public class CustomerController {
             CustomerResponse customer = customerService.createCustomer(creationRequest);
             return ResponseEntity.status(HttpStatus.CREATED).body(customer);
         } catch (InvalidCustomerDataException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(new ErrorMessage(e.getMessage()));
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CustomerResponse> getCustomerById(@PathVariable UUID id) {
+    public ResponseEntity<Object> getCustomerById(@PathVariable UUID id) {
         return customerService.findCustomerById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .<ResponseEntity<Object>>map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessage("Customer not found")));
     }
 
     @GetMapping
@@ -67,34 +68,34 @@ public class CustomerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CustomerResponse> updateCustomer(@PathVariable UUID id, @RequestBody CustomerRequest request) {
+    public ResponseEntity<Object> updateCustomer(@PathVariable UUID id, @RequestBody CustomerRequest request) {
         try {
             CustomerResponse updatedCustomer = customerService.updateCustomer(id, request);
             return ResponseEntity.ok(updatedCustomer);
         } catch (CustomerNotFoundException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessage(e.getMessage()));
         } catch (InvalidCustomerDataException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(new ErrorMessage(e.getMessage()));
         }
     }
 
     @PatchMapping("/{id}/deactivate")
-    public ResponseEntity<CustomerResponse> deactivateCustomer(@PathVariable UUID id) {
+    public ResponseEntity<Object> deactivateCustomer(@PathVariable UUID id) {
         try {
             CustomerResponse deactivatedCustomer = customerService.deactivateCustomer(id);
             return ResponseEntity.ok(deactivatedCustomer);
         } catch (CustomerNotFoundException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessage(e.getMessage()));
         }
     }
 
     @PatchMapping("/{id}/activate")
-    public ResponseEntity<CustomerResponse> activateCustomer(@PathVariable UUID id) {
+    public ResponseEntity<Object> activateCustomer(@PathVariable UUID id) {
         try {
             CustomerResponse activatedCustomer = customerService.activateCustomer(id);
             return ResponseEntity.ok(activatedCustomer);
         } catch (CustomerNotFoundException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessage(e.getMessage()));
         }
     }
 }

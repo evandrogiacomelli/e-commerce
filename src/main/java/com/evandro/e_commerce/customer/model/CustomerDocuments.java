@@ -7,6 +7,7 @@ public class CustomerDocuments {
     private LocalDate birthDate;
     private String cpf;
     private String rg;
+    private String email;
 
     public CustomerDocuments() {}
 
@@ -15,6 +16,15 @@ public class CustomerDocuments {
         this.birthDate = birthDate;
         this.cpf = cpf;
         this.rg = rg;
+        this.email = null;
+    }
+
+    public CustomerDocuments(String name, LocalDate birthDate, String cpf, String rg, String email) {
+        this.name = name;
+        this.birthDate = birthDate;
+        this.cpf = cpf;
+        this.rg = rg;
+        this.email = email;
     }
 
     public String getName() {
@@ -31,5 +41,9 @@ public class CustomerDocuments {
 
     public String getRg() {
         return rg;
+    }
+
+    public String getEmail() {
+        return email;
     }
 }

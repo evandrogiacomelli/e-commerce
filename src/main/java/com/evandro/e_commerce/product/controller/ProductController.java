@@ -38,7 +38,7 @@ public class ProductController {
             Product product = productService.createProduct(request.getName(), request.getDescription(), request.getPrice());
             return ResponseEntity.status(HttpStatus.CREATED).body(new ProductResponse(product));
         } catch (InvalidProductDataException e) {
-            return ResponseEntity.badRequest().build(); 
+            return ResponseEntity.badRequest().build();
         }
     }
 

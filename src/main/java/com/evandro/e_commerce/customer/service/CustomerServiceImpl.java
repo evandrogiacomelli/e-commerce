@@ -5,6 +5,9 @@ import com.evandro.e_commerce.customer.dto.CustomerDtoConverter;
 import com.evandro.e_commerce.customer.dto.CustomerRequest;
 import com.evandro.e_commerce.customer.dto.CustomerResponse;
 import com.evandro.e_commerce.customer.exception.CustomerNotFoundException;
+import com.evandro.e_commerce.customer.exception.DuplicateCpfException;
+import com.evandro.e_commerce.customer.exception.DuplicateRgException;
+import com.evandro.e_commerce.customer.exception.DuplicateEmailException;
 import com.evandro.e_commerce.customer.model.Customer;
 import com.evandro.e_commerce.customer.model.CustomerAddress;
 import com.evandro.e_commerce.customer.model.CustomerDocuments;
@@ -39,6 +42,7 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerResponse createCustomer(CustomerCreationRequest request) {
         documentsValidator.validate(request.documents());
         addressValidator.validate(request.address());
+        validateUniqueDocuments(request.documents());
         Customer customer = new Customer(request.documents(), request.address(), request.registerInfo());
         return new CustomerResponse(customerRepository.save(customer));
     }
@@ -72,6 +76,7 @@ public class CustomerServiceImpl implements CustomerService {
         CustomerRegisterInfo newRegisterInfo = CustomerDtoConverter.toCustomerRegisterInfo();
         documentsValidator.validate(newDocuments);
         addressValidator.validate(newAddress);
+        validateUniqueDocumentsForUpdate(newDocuments, id);
         customer.update(newDocuments, newAddress, newRegisterInfo);
         Customer savedCustomer = customerRepository.save(customer);
         return new CustomerResponse(savedCustomer);
@@ -93,5 +98,29 @@ public class CustomerServiceImpl implements CustomerService {
         customer.activate();
         Customer savedCustomer = customerRepository.save(customer);
         return new CustomerResponse(savedCustomer);
+    }
+
+    private void validateUniqueDocuments(CustomerDocuments documents) {
+        if (customerRepository.existsByCpf(documents.getCpf())) {
+            throw new DuplicateCpfException("CPF " + documents.getCpf() + " is already registered");
+        }
+        if (customerRepository.existsByRg(documents.getRg())) {
+            throw new DuplicateRgException("RG " + documents.getRg() + " is already registered");
+        }
+        if (documents.getEmail() != null && customerRepository.existsByEmail(documents.getEmail())) {
+            throw new DuplicateEmailException("Email " + documents.getEmail() + " is already registered");
+        }
+    }
+
+    private void validateUniqueDocumentsForUpdate(CustomerDocuments documents, UUID customerId) {
+        if (customerRepository.existsByCpfExcludingId(documents.getCpf(), customerId)) {
+            throw new DuplicateCpfException("CPF " + documents.getCpf() + " is already registered");
+        }
+        if (customerRepository.existsByRgExcludingId(documents.getRg(), customerId)) {
+            throw new DuplicateRgException("RG " + documents.getRg() + " is already registered");
+        }
+        if (documents.getEmail() != null && customerRepository.existsByEmailExcludingId(documents.getEmail(), customerId)) {
+            throw new DuplicateEmailException("Email " + documents.getEmail() + " is already registered");
+        }
     }
 }

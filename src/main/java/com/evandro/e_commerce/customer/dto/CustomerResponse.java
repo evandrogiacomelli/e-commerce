@@ -14,6 +14,7 @@ public class CustomerResponse {
     private LocalDate birthDate;
     private String cpf;
     private String rg;
+    private String email;
     private String zipCode;
     private String street;
     private int number;
@@ -31,6 +32,7 @@ public class CustomerResponse {
         this.birthDate = customer.getDocuments().getBirthDate();
         this.cpf = customer.getDocuments().getCpf();
         this.rg = customer.getDocuments().getRg();
+        this.email = customer.getDocuments().getEmail();
         this.zipCode = customer.getAddress().getZipCode();
         this.street = customer.getAddress().getStreet();
         this.number = customer.getAddress().getNumber();
@@ -58,6 +60,10 @@ public class CustomerResponse {
 
     public String getRg() {
         return rg;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public String getZipCode() {

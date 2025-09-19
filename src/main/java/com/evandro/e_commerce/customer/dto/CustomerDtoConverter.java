@@ -9,10 +9,11 @@ public class CustomerDtoConverter {
 
     public static CustomerDocuments toCustomerDocuments(CustomerRequest request) {
         return new CustomerDocuments(
-                request.getName(), 
-                request.getBirthDate(), 
-                request.getCpf(), 
-                request.getRg());
+                request.getName(),
+                request.getBirthDate(),
+                request.getCpf(),
+                request.getRg(),
+                request.getEmail());
     }
 
     public static CustomerAddress toCustomerAddress(CustomerRequest request) {
