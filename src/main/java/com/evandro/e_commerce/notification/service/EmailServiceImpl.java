@@ -1,5 +1,6 @@
 package com.evandro.e_commerce.notification.service;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,7 +19,6 @@ import com.evandro.e_commerce.order.model.OrderStatus;
 import com.evandro.e_commerce.order.model.PaymentStatus;
 
 import jakarta.mail.MessagingException;
-import java.io.UnsupportedEncodingException;
 import jakarta.mail.internet.MimeMessage;
 
 @Service

@@ -50,7 +50,7 @@ public class CustomerServiceTest {
         validRequest = new CustomerRequest("Evandro", LocalDate.of(1994, 10, 5),
                 "055.988.200-77", "10.444.234-2", "83200-200", "rua dos canarios", 44);
 
-        CustomerDocuments validDocs = new CustomerDocuments("Evandro", LocalDate.of(1994, 10, 5), "055.988.200-77", "10.444.234-2");
+        CustomerDocuments validDocs = new CustomerDocuments("Evandro", LocalDate.of(1994, 10, 5), "055.988.200-77", "10.444.234-2", "evandro@test.com");
         CustomerAddress validAddr = new CustomerAddress("83200-200", "rua dos canarios", 44);
         CustomerRegisterInfo activeInfo = new CustomerRegisterInfo(CustomerStatus.ACTIVE);
         validCreationRequest = new CustomerCreationRequest(validDocs, validAddr, activeInfo);
@@ -168,8 +168,17 @@ public class CustomerServiceTest {
     @DisplayName("Should return a list with all customers.")
     void shouldListAllCustomers() {
         customerService.createCustomer(validCreationRequest);
-        customerService.createCustomer(validCreationRequest);
-        customerService.createCustomer(validCreationRequest);
+
+        // Create second customer with different CPF and RG and email
+        CustomerDocuments docs2 = new CustomerDocuments("João", LocalDate.of(1985, 5, 10), "111.222.333-44", "22.333.444-5", "joao@test.com");
+        CustomerCreationRequest request2 = new CustomerCreationRequest(docs2, validCreationRequest.address(), validCreationRequest.registerInfo());
+        customerService.createCustomer(request2);
+
+        // Create third customer with different CPF and RG and email
+        CustomerDocuments docs3 = new CustomerDocuments("Maria", LocalDate.of(1990, 8, 15), "222.333.444-55", "33.444.555-6", "maria@test.com");
+        CustomerCreationRequest request3 = new CustomerCreationRequest(docs3, validCreationRequest.address(), validCreationRequest.registerInfo());
+        customerService.createCustomer(request3);
+
         List<CustomerResponse> customerList = customerService.listAllCustomer();
         assertNotNull(customerList);
         assertFalse(customerList.isEmpty());
@@ -189,8 +198,17 @@ public class CustomerServiceTest {
     @DisplayName("Should return a list of active Customers.")
     void shouldReturnListOfActiveCustomers() {
         CustomerResponse customer1 = customerService.createCustomer(validCreationRequest);
-        CustomerResponse customer2 = customerService.createCustomer(validCreationRequest);
-        CustomerResponse customer3 = customerService.createCustomer(validCreationRequest);
+
+        // Create second customer with different CPF and RG and email
+        CustomerDocuments docs2 = new CustomerDocuments("Pedro", LocalDate.of(1988, 3, 20), "333.444.555-66", "44.555.666-7", "pedro@test.com");
+        CustomerCreationRequest request2 = new CustomerCreationRequest(docs2, validCreationRequest.address(), validCreationRequest.registerInfo());
+        CustomerResponse customer2 = customerService.createCustomer(request2);
+
+        // Create third customer with different CPF and RG and email
+        CustomerDocuments docs3 = new CustomerDocuments("Ana", LocalDate.of(1992, 7, 12), "444.555.666-77", "55.666.777-8", "ana@test.com");
+        CustomerCreationRequest request3 = new CustomerCreationRequest(docs3, validCreationRequest.address(), validCreationRequest.registerInfo());
+        CustomerResponse customer3 = customerService.createCustomer(request3);
+
         customerService.deactivateCustomer(customer1.getId());
         List<CustomerResponse> listOfActives = customerService.listActiveCustomer();
         assertNotNull(listOfActives);

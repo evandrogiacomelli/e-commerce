@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.evandro.e_commerce.product.dto.ProductRequest;
 import com.evandro.e_commerce.product.dto.ProductResponse;
+import com.evandro.e_commerce.product.exception.InvalidProductPriceException;
+import com.evandro.e_commerce.product.exception.ProductNotFoundException;
 import com.evandro.e_commerce.product.model.Product;
 import com.evandro.e_commerce.product.service.ProductService;
 
@@ -78,5 +81,27 @@ public class ProductController {
     public ResponseEntity<ProductResponse> activateProduct(@PathVariable UUID id) {
         Product activatedProduct = productService.activateProduct(id);
         return ResponseEntity.ok(new ProductResponse(activatedProduct));
+    }
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<ErrorMessage> handleProductNotFoundException(ProductNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMessage(e.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidProductPriceException.class)
+    public ResponseEntity<ErrorMessage> handleInvalidProductPriceException(InvalidProductPriceException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMessage(e.getMessage()));
+    }
+
+    private static class ErrorMessage {
+        private final String message;
+
+        public ErrorMessage(String message) {
+            this.message = message;
+        }
+
+        public String getMessage() {
+            return message;
+        }
     }
 }

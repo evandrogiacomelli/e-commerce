@@ -61,13 +61,14 @@ public class OrderServiceTest {
         customerRepository.deleteAll();
         productRepository.deleteAll();
 
-        CustomerDocuments doc = new CustomerDocuments("Test Customer", LocalDate.of(1990, 1, 1), "111.222.333-44", "1234567");
+        CustomerDocuments doc = new CustomerDocuments("Test Customer", LocalDate.of(1990, 1, 1), "111.222.333-44", "1234567", "test@email.com");
         CustomerAddress addr = new CustomerAddress("12345-678", "Test Street", 100);
         CustomerRegisterInfo info = new CustomerRegisterInfo(CustomerStatus.ACTIVE);
         testCustomer = customerRepository.save(new Customer(doc, addr, info));
 
+        CustomerDocuments inactiveDoc = new CustomerDocuments("Inactive Customer", LocalDate.of(1990, 1, 1), "222.333.444-55", "7654321", "inactive@email.com");
         CustomerRegisterInfo inactiveInfo = new CustomerRegisterInfo(CustomerStatus.INACTIVE);
-        inactiveCustomer = customerRepository.save(new Customer(doc, addr, inactiveInfo));
+        inactiveCustomer = customerRepository.save(new Customer(inactiveDoc, addr, inactiveInfo));
 
         testProduct = productRepository.save(new Product("Test Product", "Description", new BigDecimal("100.00")));
     }
