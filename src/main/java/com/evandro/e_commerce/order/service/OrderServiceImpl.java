@@ -5,12 +5,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.evandro.e_commerce.customer.exception.CustomerNotFoundException;
 import com.evandro.e_commerce.customer.model.Customer;
 import com.evandro.e_commerce.customer.model.CustomerStatus;
 import com.evandro.e_commerce.customer.repository.CustomerRepository;
+import com.evandro.e_commerce.notification.service.EmailService;
 import com.evandro.e_commerce.order.exception.InvalidOrderDataException;
 import com.evandro.e_commerce.order.exception.OrderNotFoundException;
 import com.evandro.e_commerce.order.model.Order;
@@ -22,9 +25,12 @@ import com.evandro.e_commerce.product.service.ProductService;
 @Service
 public class OrderServiceImpl implements OrderService {
 
+    private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
+
     private final OrderRepository orderRepository;
     private final ProductService productService;
     private final CustomerRepository customerRepository;
+    private final EmailService emailService;
 
     private void validateOrderCreationInputs(Customer customer) {
         if (customer == null) {
@@ -35,10 +41,12 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-    public OrderServiceImpl(OrderRepository orderRepository, ProductService productService, CustomerRepository customerRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository, ProductService productService,
+                           CustomerRepository customerRepository, EmailService emailService) {
         this.orderRepository = orderRepository;
         this.productService = productService;
         this.customerRepository = customerRepository;
+        this.emailService = emailService;
     }
 
     @Override
@@ -101,7 +109,10 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new OrderNotFoundException("Order with ID " + orderId + " not found."));
 
         order.finalizeOrder();
-        return orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+
+        sendEmailNotification(savedOrder);
+        return savedOrder;
     }
 
     @Override
@@ -110,7 +121,10 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new OrderNotFoundException("Order with ID " + orderId + " not found."));
 
         order.payOrder();
-        return orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+
+        sendEmailNotification(savedOrder);
+        return savedOrder;
     }
 
     @Override
@@ -119,7 +133,10 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new OrderNotFoundException("Order with ID " + orderId + " not found."));
 
         order.deliverOrder();
-        return orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+
+        sendEmailNotification(savedOrder);
+        return savedOrder;
     }
 
     @Override
@@ -128,7 +145,22 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new OrderNotFoundException("Order with ID " + orderId + " not found."));
 
         order.cancelOrder();
-        return orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+
+        sendEmailNotification(savedOrder);
+        return savedOrder;
+    }
+
+    private void sendEmailNotification(Order order) {
+        try {
+            emailService.sendOrderUpdateEmail(order.getCustomer(), order);
+            logger.info("Email notification sent for order {} to customer {}",
+                       order.getId(), order.getCustomer().getDocuments().getEmail());
+        } catch (Exception e) {
+            logger.error("Failed to send email notification for order {} to customer {}: {}",
+                        order.getId(), order.getCustomer().getDocuments().getEmail(), e.getMessage());
+            // Email failure shouldn't break the main operation
+        }
     }
 
 }
