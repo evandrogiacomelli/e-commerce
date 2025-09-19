@@ -1,7 +1,5 @@
 package com.evandro.e_commerce.notification.service;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +18,7 @@ import com.evandro.e_commerce.order.model.OrderStatus;
 import com.evandro.e_commerce.order.model.PaymentStatus;
 
 import jakarta.mail.MessagingException;
+import java.io.UnsupportedEncodingException;
 import jakarta.mail.internet.MimeMessage;
 
 @Service
@@ -52,7 +51,7 @@ public class EmailServiceImpl implements EmailService {
             logger.info("Email sent successfully to: {} - Order: {} - Status: {}",
                        customer.getDocuments().getEmail(), order.getId(), order.getStatus());
 
-        } catch (Exception e) {
+        } catch (MessagingException | UnsupportedEncodingException e) {
             logger.error("Failed to send email to: {} - Order: {}",
                         customer.getDocuments().getEmail(), order.getId(), e);
             throw new RuntimeException("Failed to send order update email", e);
@@ -61,9 +60,6 @@ public class EmailServiceImpl implements EmailService {
 
     private String buildHtmlEmailContent(Customer customer, Order order) {
         String statusColor = getStatusColor(order.getStatus());
-        String statusIcon = getStatusIcon(order.getStatus());
-        String paymentStatusIcon = getPaymentStatusIcon(order.getPaymentStatus());
-        String paymentStatusColor = getPaymentStatusColor(order.getPaymentStatus());
 
         return """
             <!DOCTYPE html>
@@ -72,175 +68,72 @@ public class EmailServiceImpl implements EmailService {
                 <meta charset="UTF-8">
                 <style>
                     body {
-                        font-family: Arial, sans-serif;
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                         line-height: 1.6;
                         color: #333;
                         margin: 0;
-                        padding: 0;
-                        background-color: #f4f4f4;
+                        padding: 20px;
+                        background-color: #f8f9fa;
                     }
                     .container {
                         max-width: 600px;
                         margin: 0 auto;
+                        background-color: white;
                         padding: 20px;
                     }
                     .header {
-                        background: linear-gradient(135deg, #667eea 0%%, #764ba2 100%%);
+                        text-align: center;
+                        margin-bottom: 30px;
+                    }
+                    .status-badge {
+                        background-color: %s;
                         color: white;
-                        padding: 25px;
-                        text-align: center;
-                        border-radius: 10px 10px 0 0;
-                        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                        padding: 5px 10px;
+                        border-radius: 5px;
+                        font-size: 14px;
                     }
-                    .content {
-                        background-color: white;
-                        padding: 30px;
-                        border-radius: 0 0 10px 10px;
-                        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-                    }
-                    .order-info {
-                        background: linear-gradient(135deg, #f5f7fa 0%%, #c3cfe2 100%%);
-                        padding: 20px;
-                        border-radius: 8px;
-                        margin: 20px 0;
-                        border-left: 5px solid #667eea;
-                    }
-                    .status {
-                        font-weight: bold;
-                        color: %s;
+                    .total {
                         font-size: 18px;
-                    }
-                    .payment-status {
                         font-weight: bold;
-                        color: %s;
-                        font-size: 16px;
-                    }
-                    .footer {
-                        text-align: center;
-                        color: #666;
-                        font-size: 12px;
-                        margin-top: 20px;
-                        padding: 20px;
-                        border-top: 2px solid #eee;
-                    }
-                    .items-list {
-                        list-style: none;
-                        padding: 0;
                         margin: 15px 0;
                     }
-                    .items-list li {
-                        background-color: #f8f9fa;
-                        margin: 8px 0;
-                        padding: 15px;
-                        border-radius: 5px;
-                        border-left: 4px solid #28a745;
-                        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-                    }
-                    .highlight {
-                        background: linear-gradient(135deg, #e8f5e8 0%%, #d4e6d4 100%%);
-                        padding: 15px;
-                        border-radius: 8px;
-                        margin: 15px 0;
-                        border-left: 4px solid #28a745;
-                    }
-                    .total-value {
-                        font-size: 24px;
-                        font-weight: bold;
-                        color: #28a745;
-                        text-align: center;
-                        background-color: #f8f9fa;
-                        padding: 15px;
-                        border-radius: 8px;
-                        margin: 20px 0;
-                    }
-                    .order-details {
-                        display: grid;
-                        grid-template-columns: 1fr 1fr;
-                        gap: 15px;
-                        margin: 20px 0;
-                    }
-                    .detail-box {
-                        background-color: #f8f9fa;
-                        padding: 15px;
-                        border-radius: 5px;
-                        text-align: center;
+                    .item {
+                        padding: 5px 0;
+                        display: flex;
+                        justify-content: space-between;
                     }
                 </style>
             </head>
             <body>
                 <div class="container">
                     <div class="header">
-                        <h1>🛍️ E-Commerce Store</h1>
-                        <p>Atualização do seu Pedido</p>
-                        <p style="font-size: 14px; opacity: 0.9;">Sistema integrado com MailerSend SMTP</p>
+                        <h1>E-Commerce Store</h1>
+                        <p>Atualização do seu pedido</p>
                     </div>
 
-                    <div class="content">
-                        <h2>Olá, %s! 👋</h2>
-                        <p>Temos uma atualização importante sobre seu pedido:</p>
+                    <h2>Olá, %s!</h2>
+                    <p>Seu pedido foi atualizado:</p>
 
-                        <div class="order-info">
-                            <h3>📦 Pedido #%s</h3>
+                    <h3>Pedido #%s</h3>
+                    <span class="status-badge">%s</span>
 
-                            <div class="order-details">
-                                <div class="detail-box">
-                                    <strong>📅 Criado em:</strong><br>
-                                    %s
-                                </div>
-                                <div class="detail-box">
-                                    <strong>🔄 Última atualização:</strong><br>
-                                    %s
-                                </div>
-                            </div>
-
-                            <div class="highlight" style="margin: 20px 0;">
-                                <p><strong>Status atual:</strong> <span class="status">%s %s</span></p>
-                            </div>
-
-                            <div style="margin: 20px 0;">
-                                <p><strong>Status do Pagamento:</strong> <span class="payment-status">%s %s</span></p>
-                            </div>
-
-                            <div class="total-value">
-                                💰 Valor Total: R$ %.2f
-                            </div>
-                        </div>
-
-                        <h4>🛒 Itens do Pedido:</h4>
-                        <ul class="items-list">
-                            %s
-                        </ul>
-
-                        <div class="highlight">
-                            <p><strong>%s</strong></p>
-                        </div>
-
-                        <div style="text-align: center; margin: 30px 0;">
-                            <p style="font-size: 18px;">Obrigado pela preferência! 😊</p>
-                            <p style="color: #666;">Acompanhe seu pedido através do nosso sistema.</p>
-                        </div>
+                    <div class="total">
+                        Total: R$ %.2f
                     </div>
 
-                    <div class="footer">
-                        <p>Este é um email automático, não responda.</p>
-                        <p><strong>© 2024 E-Commerce Store</strong></p>
-                        <p>Sistema desenvolvido com Spring Boot + JPA + MailerSend SMTP</p>
-                        <p>Projeto acadêmico - Demonstração de tecnologias enterprise</p>
-                    </div>
+                    %s
+
+                    <p>%s</p>
+
+                    <p>Obrigado por escolher nossa loja!</p>
                 </div>
             </body>
             </html>
             """.formatted(
                 statusColor,
-                paymentStatusColor,
                 customer.getDocuments().getName(),
                 order.getId(),
-                order.getCreatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
-                statusIcon,
                 order.getStatus(),
-                paymentStatusIcon,
-                order.getPaymentStatus(),
                 order.getTotalValue(),
                 buildItemsHtml(order.getItems()),
                 getStatusMessage(order.getStatus(), order.getPaymentStatus())
@@ -257,33 +150,6 @@ public class EmailServiceImpl implements EmailService {
         };
     }
 
-    private String getStatusIcon(OrderStatus status) {
-        return switch (status) {
-            case OPEN -> "📝";
-            case WAITING_PAYMENT -> "⏳";
-            case PAID -> "✅";
-            case FINISHED -> "📦";
-            case CANCELLED -> "❌";
-        };
-    }
-
-    private String getPaymentStatusColor(PaymentStatus paymentStatus) {
-        return switch (paymentStatus) {
-            case PENDING -> "#ffc107";
-            case APPROVED -> "#28a745";
-            case REJECTED -> "#dc3545";
-            case REFUNDED -> "#6c757d";
-        };
-    }
-
-    private String getPaymentStatusIcon(PaymentStatus paymentStatus) {
-        return switch (paymentStatus) {
-            case PENDING -> "⏳";
-            case APPROVED -> "✅";
-            case REJECTED -> "❌";
-            case REFUNDED -> "↩️";
-        };
-    }
 
     private String getStatusMessage(OrderStatus status, PaymentStatus paymentStatus) {
         return switch (status) {
@@ -299,18 +165,13 @@ public class EmailServiceImpl implements EmailService {
     private String buildItemsHtml(List<OrderItem> items) {
         return items.stream()
             .map(item -> """
-                <li>
-                    <strong>🎯 %s</strong><br>
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px;">
-                        <div>Quantidade: <strong>%d</strong></div>
-                        <div>Preço unit: <strong>R$ %.2f</strong></div>
-                        <div>Subtotal: <strong style="color: #28a745;">R$ %.2f</strong></div>
-                    </div>
-                </li>
+                <div class="item">
+                    <span>%s (x%d)</span>
+                    <span>R$ %.2f</span>
+                </div>
                 """.formatted(
                     item.getProduct().getName(),
                     item.getQuantity(),
-                    item.getSalePrice(),
                     item.getSubtotal()
                 ))
             .collect(Collectors.joining());
